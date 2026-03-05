@@ -5,49 +5,62 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import dev.krgm4d.shiroguessr.navigation.Screen
 import dev.krgm4d.shiroguessr.ui.component.GameHeader
 import dev.krgm4d.shiroguessr.ui.theme.ShiroGuessrAndroidTheme
 
 /**
- * Game mode toggle, mirroring the iOS `GameMode` enum.
- */
-enum class GameMode {
-    Classic,
-    Map,
-}
-
-/**
  * Root screen of the application.
  *
- * Displays the [GameHeader] at the top and switches the content area
- * between Classic and Map modes. The default mode is [GameMode.Map],
- * matching the iOS version's behaviour.
+ * Displays the [GameHeader] at the top and uses a [NavHost] to switch
+ * the content area between Classic and Map modes. The default start
+ * destination is [Screen.Map], matching the iOS version's behaviour.
  *
  * Corresponds to the iOS `RootView`.
  */
 @Composable
 fun RootScreen(modifier: Modifier = Modifier) {
-    var currentMode by rememberSaveable { mutableStateOf(GameMode.Map) }
+    val navController = rememberNavController()
+    val currentEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = currentEntry?.destination?.route
 
     Column(modifier = modifier.fillMaxSize()) {
         GameHeader(
             onModeButtonTap = {
-                currentMode = when (currentMode) {
-                    GameMode.Classic -> GameMode.Map
-                    GameMode.Map -> GameMode.Classic
+                val isOnClassic = currentRoute
+                    ?.contains(Screen.Classic::class.qualifiedName.orEmpty()) == true
+                val target: Screen = if (isOnClassic) Screen.Map else Screen.Classic
+
+                navController.navigate(target) {
+                    // Pop up to the start destination so that pressing back
+                    // does not cycle through previously visited modes.
+                    popUpTo(Screen.Map) { inclusive = false }
+                    launchSingleTop = true
                 }
             },
             modifier = Modifier.fillMaxWidth(),
         )
 
-        when (currentMode) {
-            GameMode.Classic -> ClassicGameScreen(modifier = Modifier.weight(1f))
-            GameMode.Map -> MapGameScreen(modifier = Modifier.weight(1f))
+        NavHost(
+            navController = navController,
+            startDestination = Screen.Map,
+            modifier = Modifier.weight(1f),
+        ) {
+            composable<Screen.Classic> {
+                ClassicGameScreen()
+            }
+            composable<Screen.Map> {
+                MapGameScreen()
+            }
+            composable<Screen.Result> {
+                ResultScreen()
+            }
         }
     }
 }
