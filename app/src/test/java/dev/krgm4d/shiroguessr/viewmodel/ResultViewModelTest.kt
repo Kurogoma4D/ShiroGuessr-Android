@@ -59,6 +59,30 @@ class ResultViewModelTest {
     }
 
     @Test
+    fun `gameMode defaults to Map`() {
+        val viewModel = ResultViewModel()
+        assertEquals(GameMode.Map, viewModel.gameMode.value)
+    }
+
+    @Test
+    fun `setGameState with Classic mode stores mode`() {
+        val viewModel = ResultViewModel()
+        val gameState = createSampleGameState()
+
+        viewModel.setGameState(gameState, GameMode.Classic)
+        assertEquals(GameMode.Classic, viewModel.gameMode.value)
+    }
+
+    @Test
+    fun `setGameState with Map mode stores mode`() {
+        val viewModel = ResultViewModel()
+        val gameState = createSampleGameState()
+
+        viewModel.setGameState(gameState, GameMode.Map)
+        assertEquals(GameMode.Map, viewModel.gameMode.value)
+    }
+
+    @Test
     fun `setGameState preserves round details`() {
         val viewModel = ResultViewModel()
         val gameState = createSampleGameState()

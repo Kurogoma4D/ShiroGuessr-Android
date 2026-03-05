@@ -9,6 +9,7 @@ import dev.krgm4d.shiroguessr.model.MapCoordinate
 import dev.krgm4d.shiroguessr.service.GradientMapService
 import dev.krgm4d.shiroguessr.service.MapGameService
 import dev.krgm4d.shiroguessr.service.TimerService
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -93,16 +94,20 @@ data class MapGameUiState(
  *
  * @param mapGameService Service for map game logic
  * @param gradientMapService Service for gradient map operations
+ * @param timerServiceFactory Factory to create a [TimerService]. Receives the
+ *   [CoroutineScope] (typically viewModelScope) so tests can supply their own.
  */
 class MapGameViewModel(
     private val mapGameService: MapGameService = MapGameService(),
     private val gradientMapService: GradientMapService = GradientMapService(),
+    timerServiceFactory: ((CoroutineScope) -> TimerService)? = null,
 ) : ViewModel() {
 
     private val totalRounds = 5
     private val timeLimit = 60
 
-    private lateinit var timerService: TimerService
+    private val timerService: TimerService =
+        (timerServiceFactory ?: { scope -> TimerService(scope) }).invoke(viewModelScope)
     private var animationJob: Job? = null
 
     private val _uiState = MutableStateFlow(MapGameUiState())
@@ -111,25 +116,12 @@ class MapGameViewModel(
     val uiState: StateFlow<MapGameUiState> = _uiState.asStateFlow()
 
     init {
-        timerService = TimerService(viewModelScope)
-
         // Collect timer state
         viewModelScope.launch {
             timerService.timeRemaining.collect { time ->
                 _uiState.value = _uiState.value.copy(timeRemaining = time)
             }
         }
-    }
-
-    /**
-     * For testing: constructor that accepts a pre-built TimerService.
-     */
-    constructor(
-        mapGameService: MapGameService,
-        gradientMapService: GradientMapService,
-        timerService: TimerService,
-    ) : this(mapGameService, gradientMapService) {
-        this.timerService = timerService
     }
 
     /**

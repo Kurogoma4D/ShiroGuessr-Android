@@ -6,6 +6,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 /**
@@ -104,8 +105,13 @@ class TimerService(
             while (_isRunning.value && _timeRemaining.value > 0) {
                 delay(1000L)
                 if (_isRunning.value && _timeRemaining.value > 0) {
-                    _timeRemaining.value -= 1
-                    if (_timeRemaining.value == 0) {
+                    var reachedZero = false
+                    _timeRemaining.update { current ->
+                        val next = (current - 1).coerceAtLeast(0)
+                        reachedZero = next == 0
+                        next
+                    }
+                    if (reachedZero) {
                         _isRunning.value = false
                         onTimeout?.invoke()
                     }

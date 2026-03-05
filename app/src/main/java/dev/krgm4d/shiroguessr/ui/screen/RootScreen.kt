@@ -15,6 +15,7 @@ import androidx.navigation.compose.rememberNavController
 import dev.krgm4d.shiroguessr.navigation.Screen
 import dev.krgm4d.shiroguessr.ui.component.GameHeader
 import dev.krgm4d.shiroguessr.ui.theme.ShiroGuessrAndroidTheme
+import dev.krgm4d.shiroguessr.viewmodel.GameMode
 import dev.krgm4d.shiroguessr.viewmodel.ResultViewModel
 
 /**
@@ -58,7 +59,7 @@ fun RootScreen(modifier: Modifier = Modifier) {
             composable<Screen.Classic> {
                 ClassicGameScreen(
                     onGameCompleted = { gameState ->
-                        resultViewModel.setGameState(gameState)
+                        resultViewModel.setGameState(gameState, GameMode.Classic)
                         navController.navigate(Screen.Result) {
                             popUpTo(Screen.Classic) { inclusive = true }
                             launchSingleTop = true
@@ -69,7 +70,7 @@ fun RootScreen(modifier: Modifier = Modifier) {
             composable<Screen.Map> {
                 MapGameScreen(
                     onGameCompleted = { gameState ->
-                        resultViewModel.setGameState(gameState)
+                        resultViewModel.setGameState(gameState, GameMode.Map)
                         navController.navigate(Screen.Result) {
                             popUpTo(Screen.Map) { inclusive = true }
                             launchSingleTop = true
@@ -80,9 +81,14 @@ fun RootScreen(modifier: Modifier = Modifier) {
             composable<Screen.Result> {
                 ResultScreen(
                     onPlayAgain = {
+                        val mode = resultViewModel.gameMode.value
                         resultViewModel.clearGameState()
-                        navController.navigate(Screen.Map) {
-                            popUpTo(Screen.Map) { inclusive = true }
+                        val target: Screen = when (mode) {
+                            GameMode.Classic -> Screen.Classic
+                            GameMode.Map -> Screen.Map
+                        }
+                        navController.navigate(target) {
+                            popUpTo(Screen.Map) { inclusive = false }
                             launchSingleTop = true
                         }
                     },

@@ -1,9 +1,11 @@
 package dev.krgm4d.shiroguessr.ui.component
 
+import android.graphics.Bitmap
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
@@ -19,11 +21,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -65,6 +68,10 @@ fun GradientMapView(
     val outlineColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
     val onSurfaceColor = MaterialTheme.colorScheme.onSurface
 
+    // Cache the gradient as an ImageBitmap so we do not redraw 2500 rects every frame.
+    // Regenerate only when the gradient map instance changes.
+    val gradientBitmap = remember(gradientMap) { renderGradientBitmap(gradientMap) }
+
     Box(
         modifier = modifier
             .size(mapSize)
@@ -75,8 +82,11 @@ fun GradientMapView(
                 shape = RoundedCornerShape(12.dp),
             ),
     ) {
-        // Gradient map canvas
-        Canvas(
+        // Gradient map as a pre-rendered bitmap
+        Image(
+            bitmap = gradientBitmap,
+            contentDescription = "Gradient map",
+            contentScale = ContentScale.FillBounds,
             modifier = Modifier
                 .size(mapSize)
                 .pointerInput(isInteractionEnabled) {
@@ -93,9 +103,7 @@ fun GradientMapView(
                         }
                     }
                 },
-        ) {
-            drawGradientMap(gradientMap)
-        }
+        )
 
         // Dashed line between user pin and target pin
         if (userPin != null && targetPin != null && lineDrawProgress > 0f) {
@@ -136,25 +144,28 @@ fun GradientMapView(
 }
 
 /**
- * Draws the gradient map using bilinear interpolation on a Canvas.
+ * Pre-renders the gradient map into an [ImageBitmap] using bilinear interpolation.
+ *
+ * This is called once per gradient map change and cached via [remember],
+ * avoiding the cost of drawing 2500 individual rects on every frame.
  */
-private fun DrawScope.drawGradientMap(gradientMap: GradientMap) {
+private fun renderGradientBitmap(gradientMap: GradientMap): ImageBitmap {
     val width = gradientMap.width
     val height = gradientMap.height
-    val pixelWidth = size.width / width
-    val pixelHeight = size.height / height
 
     val topLeft = gradientMap.cornerColors[0]
     val topRight = gradientMap.cornerColors[1]
     val bottomLeft = gradientMap.cornerColors[2]
     val bottomRight = gradientMap.cornerColors[3]
 
+    val pixels = IntArray(width * height)
+
     for (y in 0 until height) {
+        val ny = if (height > 1) y.toDouble() / (height - 1) else 0.0
         for (x in 0 until width) {
             val nx = if (width > 1) x.toDouble() / (width - 1) else 0.0
-            val ny = if (height > 1) y.toDouble() / (height - 1) else 0.0
 
-            // Bilinear interpolation inline for performance
+            // Bilinear interpolation
             val topR = topLeft.r + (topRight.r - topLeft.r) * nx
             val topG = topLeft.g + (topRight.g - topLeft.g) * nx
             val topB = topLeft.b + (topRight.b - topLeft.b) * nx
@@ -163,21 +174,17 @@ private fun DrawScope.drawGradientMap(gradientMap: GradientMap) {
             val bottomG = bottomLeft.g + (bottomRight.g - bottomLeft.g) * nx
             val bottomB = bottomLeft.b + (bottomRight.b - bottomLeft.b) * nx
 
-            val r = (topR + (bottomR - topR) * ny) / 255.0
-            val g = (topG + (bottomG - topG) * ny) / 255.0
-            val b = (topB + (bottomB - topB) * ny) / 255.0
+            val r = (topR + (bottomR - topR) * ny).toInt().coerceIn(0, 255)
+            val g = (topG + (bottomG - topG) * ny).toInt().coerceIn(0, 255)
+            val b = (topB + (bottomB - topB) * ny).toInt().coerceIn(0, 255)
 
-            drawRect(
-                color = Color(
-                    red = r.toFloat(),
-                    green = g.toFloat(),
-                    blue = b.toFloat(),
-                ),
-                topLeft = Offset(x * pixelWidth, y * pixelHeight),
-                size = Size(pixelWidth, pixelHeight),
-            )
+            pixels[y * width + x] = (0xFF shl 24) or (r shl 16) or (g shl 8) or b
         }
     }
+
+    val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+    bitmap.setPixels(pixels, 0, width, 0, 0, width, height)
+    return bitmap.asImageBitmap()
 }
 
 /**
