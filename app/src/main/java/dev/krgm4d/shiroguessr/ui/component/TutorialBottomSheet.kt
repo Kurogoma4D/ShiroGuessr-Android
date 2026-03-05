@@ -34,9 +34,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import dev.krgm4d.shiroguessr.R
 import kotlinx.coroutines.launch
 
 /**
@@ -107,7 +109,7 @@ fun TutorialBottomSheet(
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(
-                    text = if (isLastPage) "Get Started" else "Next",
+                    text = stringResource(if (isLastPage) R.string.tutorial_start else R.string.tutorial_next),
                     style = MaterialTheme.typography.labelLarge,
                 )
             }
@@ -143,7 +145,7 @@ private fun WelcomePage() {
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Welcome to Guessr!",
+            text = stringResource(R.string.tutorial_welcome_title),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
@@ -152,8 +154,7 @@ private fun WelcomePage() {
         Spacer(modifier = Modifier.height(12.dp))
 
         Text(
-            text = "Can you tell the difference between shades of white? " +
-                "Test your color perception in this unique guessing game!",
+            text = stringResource(R.string.tutorial_welcome_desc),
             style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -180,7 +181,7 @@ private fun HowToPlayPage() {
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "How to Play",
+            text = stringResource(R.string.tutorial_howto_title),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
@@ -189,10 +190,7 @@ private fun HowToPlayPage() {
         Spacer(modifier = Modifier.height(12.dp))
 
         Text(
-            text = "You will be shown a target color. " +
-                "Choose the color that is closest to the target from the options provided.\n\n" +
-                "Each game consists of 5 rounds. " +
-                "The closer your choice, the higher your score!",
+            text = stringResource(R.string.tutorial_howto_desc),
             style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -219,7 +217,7 @@ private fun GameModesPage() {
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Two Game Modes",
+            text = stringResource(R.string.tutorial_modes_title),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
@@ -230,8 +228,8 @@ private fun GameModesPage() {
         // Classic mode description
         GameModeItem(
             icon = Icons.Filled.Palette,
-            title = "Classic",
-            description = "Pick the closest color from a palette of options.",
+            title = stringResource(R.string.tutorial_modes_classic_title),
+            description = stringResource(R.string.tutorial_modes_classic_desc),
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -239,8 +237,8 @@ private fun GameModesPage() {
         // Map mode description
         GameModeItem(
             icon = Icons.Filled.Map,
-            title = "Map",
-            description = "Place a pin on a gradient map to match the target color.",
+            title = stringResource(R.string.tutorial_modes_map_title),
+            description = stringResource(R.string.tutorial_modes_map_desc),
         )
     }
 }

@@ -27,10 +27,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import dev.krgm4d.shiroguessr.R
 import dev.krgm4d.shiroguessr.model.GameState
 import dev.krgm4d.shiroguessr.model.RGBColor
 import dev.krgm4d.shiroguessr.ui.component.ColorPalette
@@ -174,7 +176,7 @@ private fun StartScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "ShiroGuessr",
+            text = stringResource(R.string.app_name),
             style = MaterialTheme.typography.displayMedium,
             color = MaterialTheme.colorScheme.onSurface,
             fontWeight = FontWeight.Bold,
@@ -183,7 +185,7 @@ private fun StartScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "Can you find the right white?",
+            text = stringResource(R.string.app_tagline),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -198,7 +200,7 @@ private fun StartScreen(
                 imageVector = Icons.Default.PlayArrow,
                 contentDescription = null,
             )
-            Text(text = "Start Game")
+            Text(text = stringResource(R.string.game_start))
         }
 
         Spacer(modifier = Modifier.height(40.dp))
@@ -219,7 +221,7 @@ private fun TargetColorDisplay(
         modifier = Modifier.padding(horizontal = 16.dp),
     ) {
         Text(
-            text = "Find this color:",
+            text = stringResource(R.string.game_find_this_color),
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurface,
         )

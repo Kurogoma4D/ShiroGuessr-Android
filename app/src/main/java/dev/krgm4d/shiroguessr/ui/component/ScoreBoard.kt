@@ -13,9 +13,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import dev.krgm4d.shiroguessr.R
 import dev.krgm4d.shiroguessr.ui.theme.ShiroGuessrAndroidTheme
 
 /**
@@ -48,7 +50,7 @@ fun ScoreBoard(
             // Round indicator
             Column {
                 Text(
-                    text = "Round",
+                    text = stringResource(R.string.round_result_round_label),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -72,7 +74,7 @@ fun ScoreBoard(
             // Score display
             Column {
                 Text(
-                    text = "Score",
+                    text = stringResource(R.string.round_result_score),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
