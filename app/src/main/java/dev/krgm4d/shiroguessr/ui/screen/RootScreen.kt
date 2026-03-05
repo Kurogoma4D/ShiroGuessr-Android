@@ -67,14 +67,22 @@ fun RootScreen(modifier: Modifier = Modifier) {
                 )
             }
             composable<Screen.Map> {
-                MapGameScreen()
+                MapGameScreen(
+                    onGameCompleted = { gameState ->
+                        resultViewModel.setGameState(gameState)
+                        navController.navigate(Screen.Result) {
+                            popUpTo(Screen.Map) { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    },
+                )
             }
             composable<Screen.Result> {
                 ResultScreen(
                     onPlayAgain = {
                         resultViewModel.clearGameState()
-                        navController.navigate(Screen.Classic) {
-                            popUpTo(Screen.Map) { inclusive = false }
+                        navController.navigate(Screen.Map) {
+                            popUpTo(Screen.Map) { inclusive = true }
                             launchSingleTop = true
                         }
                     },
