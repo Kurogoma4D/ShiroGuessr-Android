@@ -110,4 +110,9 @@ class ScoreServiceTest {
     fun `getStarRating returns 1 for distance 30`() {
         assertEquals(1, scoreService.getStarRating(30))
     }
+
+    @Test
+    fun `getStarRating clamps negative distance to 0 and returns 5`() {
+        assertEquals(5, scoreService.getStarRating(-5))
+    }
 }

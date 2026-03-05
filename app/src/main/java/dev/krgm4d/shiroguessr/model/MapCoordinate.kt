@@ -9,4 +9,9 @@ package dev.krgm4d.shiroguessr.model
 data class MapCoordinate(
     val x: Double,
     val y: Double,
-)
+) {
+    init {
+        require(x in 0.0..1.0) { "x must be in 0.0..1.0, but was $x" }
+        require(y in 0.0..1.0) { "y must be in 0.0..1.0, but was $y" }
+    }
+}

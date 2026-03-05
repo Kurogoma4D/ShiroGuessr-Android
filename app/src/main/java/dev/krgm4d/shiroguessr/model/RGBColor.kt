@@ -14,6 +14,12 @@ data class RGBColor(
     val g: Int,
     val b: Int,
 ) {
+    init {
+        require(r in 0..255) { "Red value must be in 0..255, but was $r" }
+        require(g in 0..255) { "Green value must be in 0..255, but was $g" }
+        require(b in 0..255) { "Blue value must be in 0..255, but was $b" }
+    }
+
     /**
      * Converts the RGB color to Jetpack Compose [Color].
      */

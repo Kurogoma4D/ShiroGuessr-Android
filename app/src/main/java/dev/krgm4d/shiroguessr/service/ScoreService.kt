@@ -58,11 +58,12 @@ class ScoreService {
      * @return Star rating from 1 to 5
      */
     fun getStarRating(distance: Int): Int {
+        val clampedDistance = distance.coerceAtLeast(0)
         return when {
-            distance <= 2 -> 5
-            distance <= 6 -> 4
-            distance <= 12 -> 3
-            distance <= 20 -> 2
+            clampedDistance <= 2 -> 5
+            clampedDistance <= 6 -> 4
+            clampedDistance <= 12 -> 3
+            clampedDistance <= 20 -> 2
             else -> 1
         }
     }
