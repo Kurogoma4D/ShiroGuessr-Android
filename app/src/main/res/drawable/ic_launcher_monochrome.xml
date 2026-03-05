@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Organic blob silhouette matching the ShiroGuessr icon shape,
+         centered in the 108dp adaptive icon canvas (72dp safe zone) -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M54,18
+            C64,18 73,21 79,27
+            C85,33 88,41 88,50
+            C88,59 86,67 81,73
+            C76,79 68,84 58,86
+            C48,88 39,86 32,80
+            C25,74 21,66 20,56
+            C19,46 21,37 26,30
+            C31,23 40,18 54,18Z" />
+</vector>
