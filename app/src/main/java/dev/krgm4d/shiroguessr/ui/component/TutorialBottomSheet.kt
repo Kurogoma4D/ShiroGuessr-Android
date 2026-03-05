@@ -27,7 +27,9 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -91,7 +93,7 @@ fun TutorialBottomSheet(
             Spacer(modifier = Modifier.height(24.dp))
 
             // Navigation button
-            val isLastPage = pagerState.currentPage == PAGE_COUNT - 1
+            val isLastPage by remember { derivedStateOf { pagerState.currentPage == PAGE_COUNT - 1 } }
             MdFilledButton(
                 onClick = {
                     if (isLastPage) {

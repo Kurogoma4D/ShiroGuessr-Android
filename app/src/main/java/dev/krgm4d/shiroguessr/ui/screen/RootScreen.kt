@@ -34,20 +34,23 @@ import dev.krgm4d.shiroguessr.viewmodel.ResultViewModel
  * Corresponds to the iOS `RootView`.
  */
 @Composable
-fun RootScreen(modifier: Modifier = Modifier) {
+fun RootScreen(
+    modifier: Modifier = Modifier,
+    tutorialManager: TutorialManager? = null,
+) {
     val navController = rememberNavController()
     val currentEntry by navController.currentBackStackEntryAsState()
     val currentRoute = currentEntry?.destination?.route
     val resultViewModel: ResultViewModel = viewModel()
 
     val context = LocalContext.current
-    val tutorialManager = remember { TutorialManager(context) }
-    var showTutorial by remember { mutableStateOf(!tutorialManager.hasShownTutorial) }
+    val manager = remember(context) { tutorialManager ?: TutorialManager(context) }
+    var showTutorial by remember { mutableStateOf(!manager.hasShownTutorial) }
 
     if (showTutorial) {
         TutorialBottomSheet(
             onDismiss = {
-                tutorialManager.markTutorialAsShown()
+                manager.markTutorialAsShown()
                 showTutorial = false
             },
         )
