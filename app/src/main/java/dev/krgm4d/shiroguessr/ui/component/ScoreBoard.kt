@@ -1,0 +1,103 @@
+package dev.krgm4d.shiroguessr.ui.component
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import dev.krgm4d.shiroguessr.ui.theme.ShiroGuessrAndroidTheme
+
+/**
+ * Displays the current round number and cumulative score.
+ *
+ * Corresponds to the iOS version's `ScoreBoard.swift`.
+ * Shows "Round X/Y" on the left and "Score" on the right,
+ * separated by a vertical divider.
+ *
+ * @param currentRound Current round number (1-based)
+ * @param totalRounds Total number of rounds in the game
+ * @param currentScore Cumulative score so far
+ * @param modifier Optional modifier for the root layout
+ */
+@Composable
+fun ScoreBoard(
+    currentRound: Int,
+    totalRounds: Int,
+    currentScore: Int,
+    modifier: Modifier = Modifier,
+) {
+    Surface(
+        shape = RoundedCornerShape(12.dp),
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+        modifier = modifier.padding(horizontal = 16.dp),
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+        ) {
+            // Round indicator
+            Column {
+                Text(
+                    text = "Round",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "$currentRound/$totalRounds",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontWeight = FontWeight.SemiBold,
+                )
+            }
+
+            // Vertical divider
+            VerticalDivider(
+                modifier = Modifier
+                    .height(44.dp)
+                    .padding(horizontal = 24.dp),
+                color = MaterialTheme.colorScheme.outlineVariant,
+            )
+
+            // Score display
+            Column {
+                Text(
+                    text = "Score",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "$currentScore",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.SemiBold,
+                )
+            }
+
+            Spacer(modifier = Modifier.weight(1f))
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ScoreBoardPreview() {
+    ShiroGuessrAndroidTheme {
+        Column {
+            ScoreBoard(currentRound = 1, totalRounds = 5, currentScore = 0)
+            ScoreBoard(currentRound = 3, totalRounds = 5, currentScore = 2450)
+            ScoreBoard(currentRound = 5, totalRounds = 5, currentScore = 4800)
+        }
+    }
+}
