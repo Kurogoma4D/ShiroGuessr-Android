@@ -199,4 +199,14 @@ class ClassicGameViewModel(
     fun resetGame() {
         startNewGame()
     }
+
+    /**
+     * Resets the game phase to NotStarted without starting a new game.
+     *
+     * Used when navigating away from the game screen (e.g., to the result screen)
+     * so the game screen returns to its initial state when revisited.
+     */
+    fun resetToNotStarted() {
+        _uiState.value = ClassicGameUiState()
+    }
 }
