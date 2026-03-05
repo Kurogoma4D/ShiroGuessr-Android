@@ -5,7 +5,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
@@ -13,7 +17,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import dev.krgm4d.shiroguessr.navigation.Screen
+import dev.krgm4d.shiroguessr.service.TutorialManager
 import dev.krgm4d.shiroguessr.ui.component.GameHeader
+import dev.krgm4d.shiroguessr.ui.component.TutorialBottomSheet
 import dev.krgm4d.shiroguessr.ui.theme.ShiroGuessrAndroidTheme
 import dev.krgm4d.shiroguessr.viewmodel.GameMode
 import dev.krgm4d.shiroguessr.viewmodel.ResultViewModel
@@ -33,6 +39,19 @@ fun RootScreen(modifier: Modifier = Modifier) {
     val currentEntry by navController.currentBackStackEntryAsState()
     val currentRoute = currentEntry?.destination?.route
     val resultViewModel: ResultViewModel = viewModel()
+
+    val context = LocalContext.current
+    val tutorialManager = remember { TutorialManager(context) }
+    var showTutorial by remember { mutableStateOf(!tutorialManager.hasShownTutorial) }
+
+    if (showTutorial) {
+        TutorialBottomSheet(
+            onDismiss = {
+                tutorialManager.markTutorialAsShown()
+                showTutorial = false
+            },
+        )
+    }
 
     Column(modifier = modifier.fillMaxSize()) {
         GameHeader(
