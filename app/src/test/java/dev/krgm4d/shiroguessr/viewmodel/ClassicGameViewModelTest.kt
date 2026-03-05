@@ -316,6 +316,36 @@ class ClassicGameViewModelTest {
     }
 
     @Test
+    fun `totalRounds is exposed in uiState`() {
+        viewModel.startNewGame()
+        assertEquals(5, viewModel.uiState.value.totalRounds)
+    }
+
+    @Test
+    fun `nextRound does nothing when phase is Playing`() {
+        viewModel.startNewGame()
+
+        // Select a color but do NOT submit -- phase is still Playing
+        val firstColor = viewModel.uiState.value.currentRound!!.paletteColors.first().color
+        viewModel.selectColor(firstColor)
+
+        viewModel.nextRound()
+
+        // Should remain on the same round
+        val state = viewModel.uiState.value
+        assertEquals(ClassicGamePhase.Playing, state.phase)
+        assertEquals(0, state.gameState!!.currentRoundIndex)
+    }
+
+    @Test
+    fun `nextRound does nothing when phase is NotStarted`() {
+        viewModel.nextRound()
+
+        // Should remain in NotStarted
+        assertEquals(ClassicGamePhase.NotStarted, viewModel.uiState.value.phase)
+    }
+
+    @Test
     fun `perfect match gives score of 1000`() {
         viewModel.startNewGame()
 

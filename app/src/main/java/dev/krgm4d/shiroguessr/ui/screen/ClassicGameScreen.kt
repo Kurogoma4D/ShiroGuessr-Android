@@ -86,7 +86,7 @@ fun ClassicGameScreen(
                         // Score board
                         ScoreBoard(
                             currentRound = currentRound.roundNumber,
-                            totalRounds = 5,
+                            totalRounds = uiState.totalRounds,
                             currentScore = gameState.totalScore,
                         )
 

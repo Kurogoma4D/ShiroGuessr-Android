@@ -38,6 +38,7 @@ data class ClassicGameUiState(
     val phase: ClassicGamePhase = ClassicGamePhase.NotStarted,
     val gameState: GameState? = null,
     val selectedColor: RGBColor? = null,
+    val totalRounds: Int = 5,
 ) {
     /** The current round based on the game state index. */
     val currentRound: GameRound?
@@ -104,6 +105,7 @@ class ClassicGameViewModel(
             phase = ClassicGamePhase.Playing,
             gameState = gameState,
             selectedColor = null,
+            totalRounds = totalRounds,
         )
     }
 
@@ -173,6 +175,7 @@ class ClassicGameViewModel(
      */
     fun nextRound() {
         val state = _uiState.value
+        if (state.phase != ClassicGamePhase.RoundResult) return
         val gameState = state.gameState ?: return
 
         val nextIndex = gameState.currentRoundIndex + 1

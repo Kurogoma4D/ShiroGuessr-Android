@@ -53,7 +53,10 @@ fun RoundResultDialog(
     onNext: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true,
+        confirmValueChange = { false },
+    )
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,

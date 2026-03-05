@@ -7,11 +7,10 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -37,6 +36,10 @@ import dev.krgm4d.shiroguessr.model.RGBColor
  * Displays palette colors in a grid layout where each cell can be tapped
  * to select a color. The selected cell shows a checkmark overlay.
  *
+ * Uses a non-lazy Column/Row layout instead of LazyVerticalGrid to avoid
+ * unbounded height issues when placed inside a scrollable parent.
+ * Since the item count is fixed at 25, lazy loading is unnecessary.
+ *
  * @param colors List of palette colors to display (typically 25)
  * @param selectedColor Currently selected color, or null if none
  * @param onColorSelected Callback when a color cell is tapped
@@ -51,25 +54,36 @@ fun ColorPalette(
     isEnabled: Boolean,
     modifier: Modifier = Modifier,
 ) {
+    val columnsPerRow = 5
+
     Surface(
         shape = RoundedCornerShape(12.dp),
         color = MaterialTheme.colorScheme.surface,
         shadowElevation = 2.dp,
         modifier = modifier,
     ) {
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(5),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        Column(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.padding(16.dp),
         ) {
-            itemsIndexed(colors) { _, paletteColor ->
-                ColorCell(
-                    color = paletteColor.color,
-                    isSelected = selectedColor == paletteColor.color,
-                    isEnabled = isEnabled,
-                    onClick = { onColorSelected(paletteColor.color) },
-                )
+            colors.chunked(columnsPerRow).forEach { rowColors ->
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    rowColors.forEach { paletteColor ->
+                        ColorCell(
+                            color = paletteColor.color,
+                            isSelected = selectedColor == paletteColor.color,
+                            isEnabled = isEnabled,
+                            onClick = { onColorSelected(paletteColor.color) },
+                            modifier = Modifier.weight(1f),
+                        )
+                    }
+                    // Fill remaining cells in the last row if needed
+                    repeat(columnsPerRow - rowColors.size) {
+                        Box(modifier = Modifier.weight(1f))
+                    }
+                }
             }
         }
     }
@@ -87,6 +101,7 @@ private fun ColorCell(
     isSelected: Boolean,
     isEnabled: Boolean,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val borderColor by animateColorAsState(
         targetValue = if (isSelected) {
@@ -102,7 +117,7 @@ private fun ColorCell(
 
     Box(
         contentAlignment = Alignment.Center,
-        modifier = Modifier
+        modifier = modifier
             .aspectRatio(1f)
             .clip(RoundedCornerShape(8.dp))
             .background(color.toComposeColor())
