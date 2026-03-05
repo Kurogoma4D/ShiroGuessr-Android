@@ -4,6 +4,7 @@ import dev.krgm4d.shiroguessr.model.GameRound
 import dev.krgm4d.shiroguessr.model.GameState
 import dev.krgm4d.shiroguessr.model.RGBColor
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class ShareServiceTest {
@@ -213,8 +214,8 @@ class ShareServiceTest {
         )
 
         // Null distance should show as 0, star rating should be 1
-        assert(actual.contains("(Distance: 0)"))
-        assert(actual.contains("\u2B50 "))  // Single star followed by space before parenthesis
+        assertTrue(actual.contains("(Distance: 0)"))
+        assertTrue(actual.contains("\u2B50 "))  // Single star followed by space before parenthesis
     }
 
     @Test
@@ -235,7 +236,7 @@ class ShareServiceTest {
             distanceLabel = "Distance:",
         )
 
-        assert(actual.contains("https://shiro-guessr.pages.dev/app"))
-        assert(actual.endsWith("#白Guessr"))
+        assertTrue(actual.contains("https://shiro-guessr.pages.dev/app"))
+        assertTrue(actual.endsWith("#白Guessr"))
     }
 }

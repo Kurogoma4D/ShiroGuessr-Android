@@ -159,6 +159,7 @@ class ShareService {
             type = "text/plain"
         }
         val shareIntent = Intent.createChooser(sendIntent, null)
+        shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(shareIntent)
     }
 
