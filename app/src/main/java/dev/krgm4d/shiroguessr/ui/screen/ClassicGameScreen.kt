@@ -20,6 +20,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -30,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import dev.krgm4d.shiroguessr.model.GameState
 import dev.krgm4d.shiroguessr.model.RGBColor
 import dev.krgm4d.shiroguessr.ui.component.ColorPalette
 import dev.krgm4d.shiroguessr.ui.component.GameControls
@@ -49,11 +51,13 @@ import dev.krgm4d.shiroguessr.viewmodel.ClassicGameViewModel
  * 2. Active game with score board, target color, color palette, and controls
  * 3. Completed screen with total score after all rounds
  *
+ * @param onGameCompleted Callback invoked with the final game state when all rounds are done
  * @param modifier Optional modifier for the root layout
  * @param viewModel ViewModel managing the game state
  */
 @Composable
 fun ClassicGameScreen(
+    onGameCompleted: (GameState) -> Unit = {},
     modifier: Modifier = Modifier,
     viewModel: ClassicGameViewModel = viewModel(),
 ) {
@@ -133,10 +137,13 @@ fun ClassicGameScreen(
             }
 
             ClassicGamePhase.Completed -> {
-                CompletedScreen(
-                    totalScore = uiState.gameState?.totalScore ?: 0,
-                    onReplay = { viewModel.resetGame() },
-                )
+                val completedState = uiState.gameState
+                LaunchedEffect(completedState) {
+                    if (completedState != null) {
+                        onGameCompleted(completedState)
+                        viewModel.resetToNotStarted()
+                    }
+                }
             }
         }
     }
@@ -242,60 +249,6 @@ private fun TargetColorDisplay(
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-    }
-}
-
-/**
- * Screen shown when all 5 rounds are completed.
- *
- * Displays the total score and a replay button.
- * Will be replaced with a full ResultScreen in a future issue.
- */
-@Composable
-private fun CompletedScreen(
-    totalScore: Int,
-    onReplay: () -> Unit,
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(32.dp),
-    ) {
-        Spacer(modifier = Modifier.weight(1f))
-
-        Text(
-            text = "Game Complete!",
-            style = MaterialTheme.typography.headlineLarge,
-            color = MaterialTheme.colorScheme.onSurface,
-            fontWeight = FontWeight.Bold,
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "Total Score",
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-
-        Text(
-            text = "$totalScore",
-            style = MaterialTheme.typography.displayLarge,
-            color = MaterialTheme.colorScheme.primary,
-            fontWeight = FontWeight.Bold,
-        )
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        MdFilledButton(
-            onClick = onReplay,
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Text(text = "Play Again")
-        }
-
-        Spacer(modifier = Modifier.height(40.dp))
     }
 }
 
