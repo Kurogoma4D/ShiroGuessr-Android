@@ -137,12 +137,10 @@ fun ClassicGameScreen(
             }
 
             ClassicGamePhase.Completed -> {
-                val completedState = uiState.gameState
-                LaunchedEffect(completedState) {
-                    if (completedState != null) {
-                        onGameCompleted(completedState)
-                        viewModel.resetToNotStarted()
-                    }
+                LaunchedEffect(Unit) {
+                    val completedState = uiState.gameState ?: return@LaunchedEffect
+                    onGameCompleted(completedState)
+                    viewModel.resetToNotStarted()
                 }
             }
         }

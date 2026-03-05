@@ -283,16 +283,14 @@ private fun RoundResultRow(round: GameRound) {
             label = "Target",
         )
 
-        // Arrow between swatches
-        Text(
-            text = "\u2192",
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(horizontal = 8.dp),
-        )
-
-        // Selected color swatch
+        // Arrow and selected color swatch
         if (round.selectedColor != null) {
+            Text(
+                text = "\u2192",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(horizontal = 8.dp),
+            )
             ColorSwatch(
                 color = round.selectedColor,
                 label = "Selected",
@@ -306,12 +304,12 @@ private fun RoundResultRow(round: GameRound) {
             horizontalAlignment = Alignment.End,
         ) {
             Text(
-                text = "d=${round.distance ?: 0}",
+                text = if (round.distance != null) "d=${round.distance}" else "\u2014",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Text(
-                text = "${round.score ?: 0} pts",
+                text = if (round.score != null) "${round.score} pts" else "\u2014",
                 style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold,

@@ -60,6 +60,7 @@ fun RootScreen(modifier: Modifier = Modifier) {
                     onGameCompleted = { gameState ->
                         resultViewModel.setGameState(gameState)
                         navController.navigate(Screen.Result) {
+                            popUpTo(Screen.Classic) { inclusive = true }
                             launchSingleTop = true
                         }
                     },
