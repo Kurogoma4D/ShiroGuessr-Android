@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import android.app.Activity
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,6 +25,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import dev.krgm4d.shiroguessr.R
 import dev.krgm4d.shiroguessr.navigation.Screen
+import dev.krgm4d.shiroguessr.service.InterstitialAdManager
 import dev.krgm4d.shiroguessr.service.ShareService
 import dev.krgm4d.shiroguessr.service.TutorialManager
 import dev.krgm4d.shiroguessr.ui.component.GameHeader
@@ -120,17 +123,35 @@ fun RootScreen(
                     )
                 }
                 composable<Screen.Result> {
+                    // Preload the next interstitial ad when entering the result screen
+                    LaunchedEffect(Unit) {
+                        InterstitialAdManager.loadAd(context)
+                    }
+
+                    val navigateToNextGame = {
+                        val mode = resultViewModel.gameMode.value
+                        resultViewModel.clearGameState()
+                        val target: Screen = when (mode) {
+                            GameMode.Classic -> Screen.Classic
+                            GameMode.Map -> Screen.Map
+                        }
+                        navController.navigate(target) {
+                            popUpTo(Screen.Map) { inclusive = false }
+                            launchSingleTop = true
+                        }
+                    }
+
                     ResultScreen(
                         onPlayAgain = {
-                            val mode = resultViewModel.gameMode.value
-                            resultViewModel.clearGameState()
-                            val target: Screen = when (mode) {
-                                GameMode.Classic -> Screen.Classic
-                                GameMode.Map -> Screen.Map
-                            }
-                            navController.navigate(target) {
-                                popUpTo(Screen.Map) { inclusive = false }
-                                launchSingleTop = true
+                            val activity = context as? Activity
+                            if (activity != null) {
+                                // Show interstitial ad, then navigate on dismiss
+                                InterstitialAdManager.showAd(activity) {
+                                    navigateToNextGame()
+                                }
+                            } else {
+                                // Fallback: navigate without ad if Activity unavailable
+                                navigateToNextGame()
                             }
                         },
                         onShareResults = {
