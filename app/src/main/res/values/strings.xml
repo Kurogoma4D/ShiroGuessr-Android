@@ -2,15 +2,12 @@
     <string name="app_name">ShiroGuessrAndroid</string>
 
     <!-- Home / Common -->
+    <string name="app_display_name">ShiroGuessr</string>
     <string name="app_title">Guessr</string>
     <string name="app_tagline">Can you tell the whites apart?</string>
 
     <!-- Game -->
-    <string name="game_round">Round %d/5</string>
-    <string name="game_score">Score: %d</string>
-    <string name="game_target_color">Target Color</string>
     <string name="game_find_this_color">Find this color:</string>
-    <string name="game_classic_title">Classic Mode</string>
     <string name="game_map_title">Map Mode</string>
     <string name="game_map_tagline">Find the right white on the gradient map!</string>
     <string name="game_start">Start Game</string>
@@ -19,7 +16,6 @@
     <string name="game_no_results">No results available</string>
 
     <!-- Controls -->
-    <string name="controls_start">Start</string>
     <string name="controls_guess">Guess</string>
     <string name="controls_next_round">Next Round</string>
     <string name="controls_continue">Continue</string>
@@ -34,13 +30,11 @@
     <string name="round_result_pts">%d pts</string>
 
     <!-- Result -->
-    <string name="result_title">Results</string>
     <string name="result_total_score">Total Score</string>
     <string name="result_round_results">Round Results</string>
     <string name="result_play_again">Play Again</string>
     <string name="result_share">Share Results</string>
     <string name="result_copy">Copy to Clipboard</string>
-    <string name="result_copied">Copied!</string>
 
     <!-- Tutorial -->
     <string name="tutorial_welcome_title">Welcome to Guessr!</string>
@@ -55,8 +49,11 @@
     <string name="tutorial_next">Next</string>
     <string name="tutorial_start">Get Started</string>
 
-    <!-- Timer -->
-    <string name="timer_timeout">Time\'s up!</string>
+    <!-- Accessibility / contentDescription -->
+    <string name="cd_target_icon">Target</string>
+    <string name="cd_game_modes_icon">Game Modes</string>
+    <string name="cd_gradient_map">Gradient map</string>
+    <string name="cd_color_selected">Selected</string>
 
     <!-- Share -->
     <string name="share_score">Score:</string>

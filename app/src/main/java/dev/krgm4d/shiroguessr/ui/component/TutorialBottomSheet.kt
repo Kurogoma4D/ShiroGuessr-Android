@@ -173,7 +173,7 @@ private fun HowToPlayPage() {
     ) {
         Icon(
             imageVector = Icons.Filled.GpsFixed,
-            contentDescription = "Target",
+            contentDescription = stringResource(R.string.cd_target_icon),
             modifier = Modifier.size(64.dp),
             tint = MaterialTheme.colorScheme.primary,
         )
@@ -209,7 +209,7 @@ private fun GameModesPage() {
     ) {
         Icon(
             imageVector = Icons.Filled.SportsEsports,
-            contentDescription = "Game Modes",
+            contentDescription = stringResource(R.string.cd_game_modes_icon),
             modifier = Modifier.size(64.dp),
             tint = MaterialTheme.colorScheme.primary,
         )

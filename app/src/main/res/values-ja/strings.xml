@@ -3,15 +3,12 @@
     <string name="app_name">ShiroGuessrAndroid</string>
 
     <!-- Home / Common -->
+    <string name="app_display_name">ShiroGuessr</string>
     <string name="app_title">Guessr</string>
     <string name="app_tagline">あなたは白を見分けられますか？</string>
 
     <!-- Game -->
-    <string name="game_round">ラウンド %d/5</string>
-    <string name="game_score">スコア: %d</string>
-    <string name="game_target_color">ターゲットカラー</string>
     <string name="game_find_this_color">この色を探してください:</string>
-    <string name="game_classic_title">クラシックモード</string>
     <string name="game_map_title">マップモード</string>
     <string name="game_map_tagline">グラデーションマップから正しい白を見つけよう！</string>
     <string name="game_start">ゲームスタート</string>
@@ -20,7 +17,6 @@
     <string name="game_no_results">結果がありません</string>
 
     <!-- Controls -->
-    <string name="controls_start">スタート</string>
     <string name="controls_guess">回答</string>
     <string name="controls_next_round">次のラウンド</string>
     <string name="controls_continue">続ける</string>
@@ -35,13 +31,11 @@
     <string name="round_result_pts">%d pt</string>
 
     <!-- Result -->
-    <string name="result_title">結果</string>
     <string name="result_total_score">合計スコア</string>
     <string name="result_round_results">ラウンド結果</string>
     <string name="result_play_again">もう一度プレイ</string>
     <string name="result_share">結果をシェア</string>
     <string name="result_copy">クリップボードにコピー</string>
-    <string name="result_copied">コピーしました！</string>
 
     <!-- Tutorial -->
     <string name="tutorial_welcome_title">Guessrへようこそ！</string>
@@ -56,8 +50,11 @@
     <string name="tutorial_next">次へ</string>
     <string name="tutorial_start">はじめる</string>
 
-    <!-- Timer -->
-    <string name="timer_timeout">時間切れ！</string>
+    <!-- Accessibility / contentDescription -->
+    <string name="cd_target_icon">ターゲット</string>
+    <string name="cd_game_modes_icon">ゲームモード</string>
+    <string name="cd_gradient_map">グラデーションマップ</string>
+    <string name="cd_color_selected">選択済み</string>
 
     <!-- Share -->
     <string name="share_score">スコア:</string>

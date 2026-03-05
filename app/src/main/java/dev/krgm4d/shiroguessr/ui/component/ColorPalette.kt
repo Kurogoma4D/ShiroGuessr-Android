@@ -25,7 +25,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import dev.krgm4d.shiroguessr.R
 import dev.krgm4d.shiroguessr.model.PaletteColor
 import dev.krgm4d.shiroguessr.model.RGBColor
 
@@ -128,7 +130,7 @@ private fun ColorCell(
         if (isSelected) {
             Icon(
                 imageVector = Icons.Default.CheckCircle,
-                contentDescription = "Selected",
+                contentDescription = stringResource(R.string.cd_color_selected),
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
                     .background(Color.White, CircleShape)
