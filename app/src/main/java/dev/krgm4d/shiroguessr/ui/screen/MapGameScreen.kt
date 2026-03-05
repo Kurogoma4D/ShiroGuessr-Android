@@ -28,11 +28,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
 import androidx.lifecycle.viewmodel.compose.viewModel
+import dev.krgm4d.shiroguessr.R
 import dev.krgm4d.shiroguessr.model.GameState
 import dev.krgm4d.shiroguessr.model.RGBColor
 import dev.krgm4d.shiroguessr.ui.component.GameControls
@@ -209,7 +211,7 @@ private fun MapStartScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "ShiroGuessr",
+            text = stringResource(R.string.app_display_name),
             style = MaterialTheme.typography.displayMedium,
             color = MaterialTheme.colorScheme.onSurface,
             fontWeight = FontWeight.Bold,
@@ -218,7 +220,7 @@ private fun MapStartScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "Map Mode",
+            text = stringResource(R.string.game_map_title),
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -226,7 +228,7 @@ private fun MapStartScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "Find the right white on the gradient map!",
+            text = stringResource(R.string.game_map_tagline),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -241,7 +243,7 @@ private fun MapStartScreen(
                 imageVector = Icons.Default.PlayArrow,
                 contentDescription = null,
             )
-            Text(text = "Start Game")
+            Text(text = stringResource(R.string.game_start))
         }
 
         Spacer(modifier = Modifier.height(40.dp))
@@ -269,7 +271,7 @@ private fun MapTargetColorDisplay(
             .padding(12.dp),
     ) {
         Text(
-            text = "Find this color:",
+            text = stringResource(R.string.game_find_this_color),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurface,
             fontWeight = FontWeight.SemiBold,

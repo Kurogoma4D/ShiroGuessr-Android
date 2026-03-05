@@ -26,10 +26,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import dev.krgm4d.shiroguessr.R
 import dev.krgm4d.shiroguessr.model.GameRound
 import dev.krgm4d.shiroguessr.model.PaletteColor
 import dev.krgm4d.shiroguessr.model.RGBColor
@@ -89,7 +91,7 @@ private fun RoundResultContent(
     ) {
         // Header
         Text(
-            text = "Round ${round.roundNumber} Result",
+            text = stringResource(R.string.round_result_title, round.roundNumber),
             style = MaterialTheme.typography.headlineMedium,
             color = MaterialTheme.colorScheme.onSurface,
             fontWeight = FontWeight.Bold,
@@ -103,7 +105,7 @@ private fun RoundResultContent(
         ) {
             // Target color
             ColorComparisonItem(
-                label = "Target",
+                label = stringResource(R.string.round_result_target),
                 color = round.targetColor,
             )
 
@@ -118,7 +120,7 @@ private fun RoundResultContent(
             // Selected color
             if (round.selectedColor != null) {
                 ColorComparisonItem(
-                    label = "Your Guess",
+                    label = stringResource(R.string.round_result_your_guess),
                     color = round.selectedColor,
                 )
             }
@@ -142,7 +144,7 @@ private fun RoundResultContent(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = "Distance",
+                    text = stringResource(R.string.round_result_distance),
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
@@ -168,7 +170,7 @@ private fun RoundResultContent(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = "Score",
+                    text = stringResource(R.string.round_result_score),
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
@@ -189,7 +191,7 @@ private fun RoundResultContent(
             onClick = onNext,
             modifier = Modifier.fillMaxWidth(),
         ) {
-            Text(text = "Continue")
+            Text(text = stringResource(R.string.controls_continue))
             Spacer(modifier = Modifier.width(8.dp))
             Icon(
                 imageVector = Icons.Default.ArrowCircleRight,

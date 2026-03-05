@@ -27,9 +27,11 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import dev.krgm4d.shiroguessr.R
 import dev.krgm4d.shiroguessr.model.GradientMap
 import dev.krgm4d.shiroguessr.model.MapCoordinate
 import dev.krgm4d.shiroguessr.model.Pin
@@ -85,7 +87,7 @@ fun GradientMapView(
         // Gradient map as a pre-rendered bitmap
         Image(
             bitmap = gradientBitmap,
-            contentDescription = "Gradient map",
+            contentDescription = stringResource(R.string.cd_gradient_map),
             contentScale = ContentScale.FillBounds,
             modifier = Modifier
                 .size(mapSize)

@@ -37,9 +37,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import dev.krgm4d.shiroguessr.R
 import dev.krgm4d.shiroguessr.model.GameRound
 import dev.krgm4d.shiroguessr.model.GameState
 import dev.krgm4d.shiroguessr.model.RGBColor
@@ -80,7 +82,7 @@ fun ResultScreen(
             modifier = modifier.fillMaxSize(),
         ) {
             Text(
-                text = "No results available",
+                text = stringResource(R.string.game_no_results),
                 style = MaterialTheme.typography.headlineMedium,
                 color = MaterialTheme.colorScheme.onSurface,
             )
@@ -138,7 +140,7 @@ private fun ResultScreenContent(
         // Trophy icon
         Icon(
             imageVector = Icons.Default.EmojiEvents,
-            contentDescription = "Trophy",
+            contentDescription = null,
             tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier.size(80.dp),
         )
@@ -147,7 +149,7 @@ private fun ResultScreenContent(
 
         // Title
         Text(
-            text = "Game Complete!",
+            text = stringResource(R.string.game_complete),
             style = MaterialTheme.typography.headlineMedium,
             color = MaterialTheme.colorScheme.onSurface,
             fontWeight = FontWeight.Bold,
@@ -157,7 +159,7 @@ private fun ResultScreenContent(
 
         // Total score label
         Text(
-            text = "Total Score",
+            text = stringResource(R.string.result_total_score),
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -180,7 +182,7 @@ private fun ResultScreenContent(
 
         // Round results header
         Text(
-            text = "Round Results",
+            text = stringResource(R.string.result_round_results),
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurface,
             fontWeight = FontWeight.SemiBold,
@@ -213,7 +215,7 @@ private fun ResultScreenContent(
                 contentDescription = null,
             )
             Spacer(modifier = Modifier.width(8.dp))
-            Text(text = "Play Again")
+            Text(text = stringResource(R.string.result_play_again))
         }
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -227,7 +229,7 @@ private fun ResultScreenContent(
                 contentDescription = null,
             )
             Spacer(modifier = Modifier.width(8.dp))
-            Text(text = "Share Results")
+            Text(text = stringResource(R.string.result_share))
         }
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -241,7 +243,7 @@ private fun ResultScreenContent(
                 contentDescription = null,
             )
             Spacer(modifier = Modifier.width(8.dp))
-            Text(text = "Copy to Clipboard")
+            Text(text = stringResource(R.string.result_copy))
         }
 
         Spacer(modifier = Modifier.height(32.dp))
@@ -280,7 +282,7 @@ private fun RoundResultRow(round: GameRound) {
         // Target color swatch
         ColorSwatch(
             color = round.targetColor,
-            label = "Target",
+            label = stringResource(R.string.round_result_target),
         )
 
         // Arrow and selected color swatch
@@ -293,7 +295,7 @@ private fun RoundResultRow(round: GameRound) {
             )
             ColorSwatch(
                 color = round.selectedColor,
-                label = "Selected",
+                label = stringResource(R.string.round_result_your_guess),
             )
         }
 
@@ -309,7 +311,7 @@ private fun RoundResultRow(round: GameRound) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Text(
-                text = if (round.score != null) "${round.score} pts" else "\u2014",
+                text = if (round.score != null) stringResource(R.string.round_result_pts, round.score) else "\u2014",
                 style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold,
