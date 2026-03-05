@@ -30,9 +30,11 @@ object InterstitialAdManager {
     private const val TAG = "InterstitialAdManager"
 
     /** The currently loaded interstitial ad, or null if not yet loaded. */
+    @Volatile
     private var interstitialAd: InterstitialAd? = null
 
     /** Whether an ad is currently being loaded. */
+    @Volatile
     private var isLoading = false
 
     /**
@@ -96,7 +98,7 @@ object InterstitialAdManager {
             override fun onAdDismissedFullScreenContent() {
                 Log.d(TAG, "Interstitial ad dismissed")
                 interstitialAd = null
-                onDismissed()
+                activity.runOnUiThread { onDismissed() }
                 // Preload the next ad
                 loadAd(activity)
             }
@@ -104,7 +106,7 @@ object InterstitialAdManager {
             override fun onAdFailedToShowFullScreenContent(adError: AdError) {
                 Log.w(TAG, "Interstitial ad failed to show: ${adError.message}")
                 interstitialAd = null
-                onDismissed()
+                activity.runOnUiThread { onDismissed() }
                 // Preload for next time
                 loadAd(activity)
             }

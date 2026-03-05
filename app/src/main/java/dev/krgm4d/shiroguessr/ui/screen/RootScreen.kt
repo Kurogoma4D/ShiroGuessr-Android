@@ -9,6 +9,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import android.app.Activity
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -123,7 +124,22 @@ fun RootScreen(
                 }
                 composable<Screen.Result> {
                     // Preload the next interstitial ad when entering the result screen
-                    InterstitialAdManager.loadAd(context)
+                    LaunchedEffect(Unit) {
+                        InterstitialAdManager.loadAd(context)
+                    }
+
+                    val navigateToNextGame = {
+                        val mode = resultViewModel.gameMode.value
+                        resultViewModel.clearGameState()
+                        val target: Screen = when (mode) {
+                            GameMode.Classic -> Screen.Classic
+                            GameMode.Map -> Screen.Map
+                        }
+                        navController.navigate(target) {
+                            popUpTo(Screen.Map) { inclusive = false }
+                            launchSingleTop = true
+                        }
+                    }
 
                     ResultScreen(
                         onPlayAgain = {
@@ -131,29 +147,11 @@ fun RootScreen(
                             if (activity != null) {
                                 // Show interstitial ad, then navigate on dismiss
                                 InterstitialAdManager.showAd(activity) {
-                                    val mode = resultViewModel.gameMode.value
-                                    resultViewModel.clearGameState()
-                                    val target: Screen = when (mode) {
-                                        GameMode.Classic -> Screen.Classic
-                                        GameMode.Map -> Screen.Map
-                                    }
-                                    navController.navigate(target) {
-                                        popUpTo(Screen.Map) { inclusive = false }
-                                        launchSingleTop = true
-                                    }
+                                    navigateToNextGame()
                                 }
                             } else {
                                 // Fallback: navigate without ad if Activity unavailable
-                                val mode = resultViewModel.gameMode.value
-                                resultViewModel.clearGameState()
-                                val target: Screen = when (mode) {
-                                    GameMode.Classic -> Screen.Classic
-                                    GameMode.Map -> Screen.Map
-                                }
-                                navController.navigate(target) {
-                                    popUpTo(Screen.Map) { inclusive = false }
-                                    launchSingleTop = true
-                                }
+                                navigateToNextGame()
                             }
                         },
                         onShareResults = {
