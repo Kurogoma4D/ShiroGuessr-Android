@@ -212,6 +212,7 @@ class MapGameViewModel(
      */
     fun nextRound() {
         val state = _uiState.value
+        if (state.phase != MapGamePhase.RoundResult) return
         val gameState = state.gameState ?: return
 
         // Cancel any running animation
