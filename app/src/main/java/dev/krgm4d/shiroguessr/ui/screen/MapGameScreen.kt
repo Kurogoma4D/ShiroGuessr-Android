@@ -167,7 +167,7 @@ fun MapGameScreen(
                         RoundResultDialog(
                             round = currentRound,
                             onNext = { viewModel.nextRound() },
-                            onDismiss = { /* Keep dialog open until next is pressed */ },
+                            onDismiss = { viewModel.nextRound() },
                         )
                     }
                 }

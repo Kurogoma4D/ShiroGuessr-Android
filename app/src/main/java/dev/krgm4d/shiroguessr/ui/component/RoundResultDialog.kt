@@ -57,13 +57,11 @@ fun RoundResultDialog(
 ) {
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
-        confirmValueChange = { false },
     )
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
-        dragHandle = null,
     ) {
         RoundResultContent(
             round = round,
@@ -87,7 +85,7 @@ private fun RoundResultContent(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 24.dp)
-            .padding(top = 48.dp, bottom = 24.dp),
+            .padding(top = 8.dp, bottom = 24.dp),
     ) {
         // Header
         Text(
