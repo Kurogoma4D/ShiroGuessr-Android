@@ -86,9 +86,9 @@ fun RootScreen(
                     val target: Screen = if (isOnClassic) Screen.Map else Screen.Classic
 
                     navController.navigate(target) {
-                        // Pop up to the start destination so that pressing back
-                        // does not cycle through previously visited modes.
-                        popUpTo(Screen.Map) { inclusive = false }
+                        // Clear the entire back stack so that toggling modes
+                        // does not accumulate stale entries.
+                        popUpTo(navController.graph.id) { inclusive = true }
                         launchSingleTop = true
                     }
                 },
@@ -105,6 +105,7 @@ fun RootScreen(
                         onGameCompleted = { gameState ->
                             resultViewModel.setGameState(gameState, GameMode.Classic)
                             navController.navigate(Screen.Result) {
+                                popUpTo(navController.graph.id) { inclusive = true }
                                 launchSingleTop = true
                             }
                         },
@@ -115,6 +116,7 @@ fun RootScreen(
                         onGameCompleted = { gameState ->
                             resultViewModel.setGameState(gameState, GameMode.Map)
                             navController.navigate(Screen.Result) {
+                                popUpTo(navController.graph.id) { inclusive = true }
                                 launchSingleTop = true
                             }
                         },
