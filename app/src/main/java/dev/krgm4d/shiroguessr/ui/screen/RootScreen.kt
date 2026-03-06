@@ -105,7 +105,6 @@ fun RootScreen(
                         onGameCompleted = { gameState ->
                             resultViewModel.setGameState(gameState, GameMode.Classic)
                             navController.navigate(Screen.Result) {
-                                popUpTo(Screen.Classic) { inclusive = true }
                                 launchSingleTop = true
                             }
                         },
@@ -116,7 +115,6 @@ fun RootScreen(
                         onGameCompleted = { gameState ->
                             resultViewModel.setGameState(gameState, GameMode.Map)
                             navController.navigate(Screen.Result) {
-                                popUpTo(Screen.Map) { inclusive = true }
                                 launchSingleTop = true
                             }
                         },
@@ -135,8 +133,11 @@ fun RootScreen(
                             GameMode.Classic -> Screen.Classic
                             GameMode.Map -> Screen.Map
                         }
+                        // Pop the entire back stack (including start destination)
+                        // and navigate to the target game mode, so "Play Again"
+                        // always returns to the same mode the user was playing.
                         navController.navigate(target) {
-                            popUpTo(Screen.Map) { inclusive = false }
+                            popUpTo(navController.graph.id) { inclusive = true }
                             launchSingleTop = true
                         }
                     }
