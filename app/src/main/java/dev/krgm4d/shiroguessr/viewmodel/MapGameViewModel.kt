@@ -212,7 +212,7 @@ class MapGameViewModel(
      */
     fun nextRound() {
         val state = _uiState.value
-        if (state.phase != MapGamePhase.RoundResult) return
+        if (state.phase != MapGamePhase.RoundResult && !state.isRoundSubmitted) return
         val gameState = state.gameState ?: return
 
         // Cancel any running animation
@@ -246,6 +246,15 @@ class MapGameViewModel(
                 totalRounds = totalRounds,
             )
         }
+    }
+
+    /**
+     * Dismisses the round result sheet without advancing to the next round.
+     */
+    fun dismissRoundResult() {
+        val state = _uiState.value
+        if (state.phase != MapGamePhase.RoundResult) return
+        _uiState.value = state.copy(phase = MapGamePhase.Playing)
     }
 
     /**

@@ -1,12 +1,5 @@
 package dev.krgm4d.shiroguessr.ui.component
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -25,15 +18,14 @@ import dev.krgm4d.shiroguessr.R
 import dev.krgm4d.shiroguessr.ui.theme.ShiroGuessrAndroidTheme
 
 /**
- * Game action buttons: "Guess" to submit an answer and "Next Round" to proceed.
+ * Game action button: shows "Guess" before submission and "Next Round" after.
  *
  * Corresponds to the iOS version's `GameControls.swift`.
- * Shows the submit button when waiting for an answer, and switches
- * to a "Next Round" button after submission, with a spring animation
- * for the transition.
+ * Uses a single button that switches its label and action based on state,
+ * preventing layout shifts during transitions.
  *
  * @param canSubmit Whether the submit button should be enabled
- * @param canProceed Whether the "Next Round" button should be shown
+ * @param canProceed Whether the "Next Round" state should be shown
  * @param onSubmit Callback when the submit button is pressed
  * @param onNext Callback when the "Next Round" button is pressed
  * @param modifier Optional modifier for the root layout
@@ -46,48 +38,27 @@ fun GameControls(
     onNext: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = modifier.padding(horizontal = 16.dp),
+    MdFilledButton(
+        onClick = if (canProceed) onNext else onSubmit,
+        enabled = canSubmit || canProceed,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
     ) {
-        // Submit button (shown before answer is submitted)
-        AnimatedVisibility(
-            visible = !canProceed,
-            enter = fadeIn(animationSpec = spring(dampingRatio = 0.7f, stiffness = 500f)) +
-                slideInVertically(animationSpec = spring(dampingRatio = 0.7f, stiffness = 500f)),
-            exit = fadeOut() + slideOutVertically(),
-        ) {
-            MdFilledButton(
-                onClick = onSubmit,
-                enabled = canSubmit,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Icon(
-                    imageVector = Icons.Default.CheckCircle,
-                    contentDescription = null,
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(text = stringResource(R.string.controls_guess))
-            }
-        }
-
-        // Next round button (shown after answer is submitted)
-        AnimatedVisibility(
-            visible = canProceed,
-            enter = fadeIn(animationSpec = spring(dampingRatio = 0.7f, stiffness = 500f)) +
-                slideInVertically(animationSpec = spring(dampingRatio = 0.7f, stiffness = 500f)),
-            exit = fadeOut() + slideOutVertically(),
-        ) {
-            MdFilledButton(
-                onClick = onNext,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text(text = stringResource(R.string.controls_next_round))
-                Spacer(modifier = Modifier.width(8.dp))
-                Icon(
-                    imageVector = Icons.Default.ArrowCircleRight,
-                    contentDescription = null,
-                )
-            }
+        if (canProceed) {
+            Text(text = stringResource(R.string.controls_next_round))
+            Spacer(modifier = Modifier.width(8.dp))
+            Icon(
+                imageVector = Icons.Default.ArrowCircleRight,
+                contentDescription = null,
+            )
+        } else {
+            Icon(
+                imageVector = Icons.Default.CheckCircle,
+                contentDescription = null,
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(text = stringResource(R.string.controls_guess))
         }
     }
 }

@@ -60,10 +60,18 @@ import dev.krgm4d.shiroguessr.viewmodel.ClassicGameViewModel
 @Composable
 fun ClassicGameScreen(
     onGameCompleted: (GameState) -> Unit = {},
+    autoStart: Boolean = false,
     modifier: Modifier = Modifier,
     viewModel: ClassicGameViewModel = viewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    // Auto-start the game when navigating from Play Again
+    LaunchedEffect(autoStart) {
+        if (autoStart && uiState.phase == ClassicGamePhase.NotStarted) {
+            viewModel.startNewGame()
+        }
+    }
 
     Box(
         modifier = modifier
@@ -132,7 +140,7 @@ fun ClassicGameScreen(
                         RoundResultDialog(
                             round = currentRound,
                             onNext = { viewModel.nextRound() },
-                            onDismiss = { viewModel.nextRound() },
+                            onDismiss = { viewModel.dismissRoundResult() },
                         )
                     }
                 }
@@ -142,7 +150,6 @@ fun ClassicGameScreen(
                 LaunchedEffect(Unit) {
                     val completedState = uiState.gameState ?: return@LaunchedEffect
                     onGameCompleted(completedState)
-                    viewModel.resetToNotStarted()
                 }
             }
         }

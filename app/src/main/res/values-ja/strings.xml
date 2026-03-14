@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">ShiroGuessrAndroid</string>
+    <string name="app_name">白Guessr</string>
 
     <!-- Home / Common -->
-    <string name="app_display_name">ShiroGuessr</string>
-    <string name="app_title">Guessr</string>
+    <string name="app_display_name">白Guessr</string>
+    <string name="app_title">白Guessr</string>
     <string name="app_tagline">あなたは白を見分けられますか？</string>
 
     <!-- Game -->
-    <string name="game_find_this_color">この色を探してください:</string>
+    <string name="game_find_this_color">この色を探してください</string>
     <string name="game_map_title">マップモード</string>
     <string name="game_map_tagline">グラデーションマップから正しい白を見つけよう！</string>
     <string name="game_start">ゲームスタート</string>
@@ -38,7 +38,7 @@
     <string name="result_copy">クリップボードにコピー</string>
 
     <!-- Tutorial -->
-    <string name="tutorial_welcome_title">Guessrへようこそ！</string>
+    <string name="tutorial_welcome_title">白Guessrへようこそ！</string>
     <string name="tutorial_welcome_desc">白の微妙な違いを見分けられますか？このユニークな推測ゲームで色覚をテストしましょう！</string>
     <string name="tutorial_howto_title">遊び方</string>
     <string name="tutorial_howto_desc">ターゲットカラーが表示されます。選択肢の中からターゲットに最も近い色を選んでください。\n\n各ゲームは5ラウンドで構成されています。選択が近いほど、スコアが高くなります！</string>

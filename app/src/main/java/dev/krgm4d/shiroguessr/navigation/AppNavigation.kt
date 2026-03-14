@@ -11,13 +11,13 @@ import kotlinx.serialization.Serializable
 sealed interface Screen {
     /** Classic color-guessing mode. */
     @Serializable
-    data object Classic : Screen
+    data class Classic(val autoStart: Boolean = false) : Screen
 
     /** Map-based color-guessing mode. */
     @Serializable
-    data object Map : Screen
+    data class Map(val autoStart: Boolean = false) : Screen
 
     /** Results screen shown after a game round. */
     @Serializable
-    data object Result : Screen
+    data class Result(val gameMode: String) : Screen
 }
