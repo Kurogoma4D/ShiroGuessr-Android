@@ -6,6 +6,10 @@ on:
       - 'v*'
   workflow_dispatch:
 
+concurrency:
+  group: cd-release
+  cancel-in-progress: false
+
 jobs:
   release:
     name: Build & Deploy Release
@@ -31,25 +35,20 @@ jobs:
           echo "$KEYSTORE_BASE64" | base64 --decode > ${{ github.workspace }}/release.keystore
 
       - name: Write local.properties with production AdMob IDs
+        env:
+          ADMOB_APP_ID: ${{ secrets.ADMOB_APP_ID }}
+          ADMOB_INTERSTITIAL_AD_UNIT_ID: ${{ secrets.ADMOB_INTERSTITIAL_AD_UNIT_ID }}
         run: |
-          echo "ADMOB_APP_ID=${{ secrets.ADMOB_APP_ID }}" > local.properties
-          echo "ADMOB_INTERSTITIAL_AD_UNIT_ID=${{ secrets.ADMOB_INTERSTITIAL_AD_UNIT_ID }}" >> local.properties
+          echo "ADMOB_APP_ID=$ADMOB_APP_ID" > local.properties
+          echo "ADMOB_INTERSTITIAL_AD_UNIT_ID=$ADMOB_INTERSTITIAL_AD_UNIT_ID" >> local.properties
 
-      - name: Build Release AAB
+      - name: Build Release AAB and APK
         env:
           KEYSTORE_FILE: ${{ github.workspace }}/release.keystore
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: ./gradlew bundleRelease
-
-      - name: Build Release APK
-        env:
-          KEYSTORE_FILE: ${{ github.workspace }}/release.keystore
-          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: ./gradlew assembleRelease
+        run: ./gradlew bundleRelease assembleRelease
 
       - name: Upload to Google Play Store
         uses: r0adkll/upload-google-play@v1
@@ -68,3 +67,7 @@ jobs:
           files: |
             app/build/outputs/bundle/release/app-release.aab
             app/build/outputs/apk/release/app-release.apk
+
+      - name: Clean up keystore
+        if: always()
+        run: rm -f ${{ github.workspace }}/release.keystore
