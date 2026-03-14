@@ -175,7 +175,7 @@ class ClassicGameViewModel(
      */
     fun nextRound() {
         val state = _uiState.value
-        if (state.phase != ClassicGamePhase.RoundResult) return
+        if (state.phase != ClassicGamePhase.RoundResult && !state.isRoundSubmitted) return
         val gameState = state.gameState ?: return
 
         val nextIndex = gameState.currentRoundIndex + 1
@@ -191,6 +191,15 @@ class ClassicGameViewModel(
             gameState = updatedGameState,
             selectedColor = null,
         )
+    }
+
+    /**
+     * Dismisses the round result sheet without advancing to the next round.
+     */
+    fun dismissRoundResult() {
+        val state = _uiState.value
+        if (state.phase != ClassicGamePhase.RoundResult) return
+        _uiState.value = state.copy(phase = ClassicGamePhase.Playing)
     }
 
     /**

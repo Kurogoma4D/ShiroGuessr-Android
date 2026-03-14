@@ -1,6 +1,7 @@
 package dev.krgm4d.shiroguessr.ui.screen
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -24,6 +25,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import dev.krgm4d.shiroguessr.R
+import androidx.navigation.toRoute
 import dev.krgm4d.shiroguessr.navigation.Screen
 import dev.krgm4d.shiroguessr.service.InterstitialAdManager
 import dev.krgm4d.shiroguessr.service.ShareService
@@ -73,6 +75,7 @@ fun RootScreen(
 
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+        contentWindowInsets = WindowInsets(0),
     ) { scaffoldPadding ->
         Column(
             modifier = modifier
@@ -83,7 +86,7 @@ fun RootScreen(
                 onModeButtonTap = {
                     val isOnClassic = currentRoute
                         ?.contains(Screen.Classic::class.qualifiedName.orEmpty()) == true
-                    val target: Screen = if (isOnClassic) Screen.Map else Screen.Classic
+                    val target: Screen = if (isOnClassic) Screen.Map() else Screen.Classic()
 
                     navController.navigate(target) {
                         // Clear the entire back stack so that toggling modes
@@ -97,43 +100,49 @@ fun RootScreen(
 
             NavHost(
                 navController = navController,
-                startDestination = Screen.Map,
+                startDestination = Screen.Map(),
                 modifier = Modifier.weight(1f),
             ) {
-                composable<Screen.Classic> {
+                composable<Screen.Classic> { backStackEntry ->
+                    val route = backStackEntry.toRoute<Screen.Classic>()
                     ClassicGameScreen(
+                        autoStart = route.autoStart,
                         onGameCompleted = { gameState ->
                             resultViewModel.setGameState(gameState, GameMode.Classic)
-                            navController.navigate(Screen.Result) {
+                            navController.navigate(Screen.Result(gameMode = GameMode.Classic.name)) {
                                 popUpTo(navController.graph.id) { inclusive = true }
                                 launchSingleTop = true
                             }
                         },
                     )
                 }
-                composable<Screen.Map> {
+                composable<Screen.Map> { backStackEntry ->
+                    val route = backStackEntry.toRoute<Screen.Map>()
                     MapGameScreen(
+                        autoStart = route.autoStart,
                         onGameCompleted = { gameState ->
                             resultViewModel.setGameState(gameState, GameMode.Map)
-                            navController.navigate(Screen.Result) {
+                            navController.navigate(Screen.Result(gameMode = GameMode.Map.name)) {
                                 popUpTo(navController.graph.id) { inclusive = true }
                                 launchSingleTop = true
                             }
                         },
                     )
                 }
-                composable<Screen.Result> {
+                composable<Screen.Result> { backStackEntry ->
+                    val resultRoute = backStackEntry.toRoute<Screen.Result>()
+                    val gameMode = GameMode.valueOf(resultRoute.gameMode)
+
                     // Preload the next interstitial ad when entering the result screen
                     LaunchedEffect(Unit) {
                         InterstitialAdManager.loadAd(context)
                     }
 
                     val navigateToNextGame = {
-                        val mode = resultViewModel.gameMode.value
                         resultViewModel.clearGameState()
-                        val target: Screen = when (mode) {
-                            GameMode.Classic -> Screen.Classic
-                            GameMode.Map -> Screen.Map
+                        val target: Screen = when (gameMode) {
+                            GameMode.Classic -> Screen.Classic(autoStart = true)
+                            GameMode.Map -> Screen.Map(autoStart = true)
                         }
                         // Pop the entire back stack (including start destination)
                         // and navigate to the target game mode, so "Play Again"

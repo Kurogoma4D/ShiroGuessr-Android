@@ -1,9 +1,9 @@
 <resources>
-    <string name="app_name">ShiroGuessrAndroid</string>
+    <string name="app_name">ShiroGuessr</string>
 
     <!-- Home / Common -->
     <string name="app_display_name">ShiroGuessr</string>
-    <string name="app_title">Guessr</string>
+    <string name="app_title">ShiroGuessr</string>
     <string name="app_tagline">Can you tell the whites apart?</string>
 
     <!-- Game -->
@@ -37,7 +37,7 @@
     <string name="result_copy">Copy to Clipboard</string>
 
     <!-- Tutorial -->
-    <string name="tutorial_welcome_title">Welcome to Guessr!</string>
+    <string name="tutorial_welcome_title">Welcome to ShiroGuessr!</string>
     <string name="tutorial_welcome_desc">Can you tell the difference between shades of white? Test your color perception in this unique guessing game!</string>
     <string name="tutorial_howto_title">How to Play</string>
     <string name="tutorial_howto_desc">You will be shown a target color. Choose the color that is closest to the target from the options provided.\n\nEach game consists of 5 rounds. The closer your choice, the higher your score!</string>

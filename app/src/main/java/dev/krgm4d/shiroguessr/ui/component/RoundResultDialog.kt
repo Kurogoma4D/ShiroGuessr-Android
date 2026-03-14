@@ -46,7 +46,7 @@ import dev.krgm4d.shiroguessr.ui.theme.ShiroGuessrAndroidTheme
  *
  * @param round The completed game round with results
  * @param onNext Callback to proceed to the next round
- * @param onDismiss Callback when the sheet is dismissed
+ * @param onDismiss Callback when the sheet is dismissed without pressing Next
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

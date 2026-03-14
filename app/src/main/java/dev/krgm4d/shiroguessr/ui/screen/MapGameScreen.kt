@@ -65,10 +65,18 @@ import dev.krgm4d.shiroguessr.viewmodel.MapGameViewModel
 @Composable
 fun MapGameScreen(
     onGameCompleted: (GameState) -> Unit = {},
+    autoStart: Boolean = false,
     modifier: Modifier = Modifier,
     viewModel: MapGameViewModel = viewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    // Auto-start the game when navigating from Play Again
+    LaunchedEffect(autoStart) {
+        if (autoStart && uiState.phase == MapGamePhase.NotStarted) {
+            viewModel.startNewGame()
+        }
+    }
 
     Box(
         modifier = modifier
@@ -167,7 +175,7 @@ fun MapGameScreen(
                         RoundResultDialog(
                             round = currentRound,
                             onNext = { viewModel.nextRound() },
-                            onDismiss = { viewModel.nextRound() },
+                            onDismiss = { viewModel.dismissRoundResult() },
                         )
                     }
                 }
@@ -177,7 +185,6 @@ fun MapGameScreen(
                 LaunchedEffect(Unit) {
                     val completedState = uiState.gameState ?: return@LaunchedEffect
                     onGameCompleted(completedState)
-                    viewModel.resetToNotStarted()
                 }
             }
         }
