@@ -19,15 +19,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.krgm4d.shiroguessr.R
+import dev.krgm4d.shiroguessr.ui.theme.AccentContainer
+import dev.krgm4d.shiroguessr.ui.theme.AccentPrimary
+import dev.krgm4d.shiroguessr.ui.theme.CanvasDeep
 import dev.krgm4d.shiroguessr.ui.theme.ShiroGuessrAndroidTheme
 
 /**
  * Header component displaying the app title and a mode toggle button.
  *
  * Corresponds to the iOS version's `GameHeader.swift`.
- * Uses Material Design 3 color roles: secondaryContainer for the button
- * background and onSecondaryContainer for button content, matching the
- * iOS version's styling intent.
+ * Uses Shiro Gallery colors: CanvasDeep background, AccentPrimary/AccentContainer
+ * for the mode toggle button.
  *
  * @param onModeButtonTap Callback invoked when the mode toggle button is tapped.
  * @param modifier Optional [Modifier] for the root layout.
@@ -38,7 +40,7 @@ fun GameHeader(
     modifier: Modifier = Modifier,
 ) {
     Surface(
-        color = MaterialTheme.colorScheme.surface,
+        color = CanvasDeep,
         modifier = modifier,
     ) {
         Row(
@@ -56,10 +58,10 @@ fun GameHeader(
 
             TextButton(
                 onClick = onModeButtonTap,
-                shape = RoundedCornerShape(20.dp),
+                shape = RoundedCornerShape(24.dp),
                 colors = ButtonDefaults.textButtonColors(
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                    containerColor = AccentContainer,
+                    contentColor = AccentPrimary,
                 ),
             ) {
                 Icon(

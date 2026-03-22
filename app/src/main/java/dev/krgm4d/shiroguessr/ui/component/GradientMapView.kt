@@ -77,11 +77,11 @@ fun GradientMapView(
     Box(
         modifier = modifier
             .size(mapSize)
-            .clip(RoundedCornerShape(12.dp))
+            .clip(RoundedCornerShape(16.dp))
             .border(
                 width = 2.dp,
                 color = outlineColor,
-                shape = RoundedCornerShape(12.dp),
+                shape = RoundedCornerShape(16.dp),
             ),
     ) {
         // Gradient map as a pre-rendered bitmap
