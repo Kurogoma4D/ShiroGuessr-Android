@@ -27,6 +27,7 @@
     <string name="round_result_score">スコア</string>
     <string name="round_result_target">ターゲット</string>
     <string name="round_result_your_guess">あなたの回答</string>
+    <string name="round_result_vs">vs</string>
     <string name="round_result_round_label">ラウンド</string>
     <string name="round_result_pts">%d pt</string>
 
@@ -55,6 +56,8 @@
     <string name="cd_game_modes_icon">ゲームモード</string>
     <string name="cd_gradient_map">グラデーションマップ</string>
     <string name="cd_color_cell">カラーセル</string>
+    <string name="cd_star_earned">獲得スター</string>
+    <string name="cd_star_unearned">未獲得スター</string>
 
 
     <!-- Share -->

@@ -26,6 +26,7 @@
     <string name="round_result_score">Score</string>
     <string name="round_result_target">Target</string>
     <string name="round_result_your_guess">Your Guess</string>
+    <string name="round_result_vs">vs</string>
     <string name="round_result_round_label">Round</string>
     <string name="round_result_pts">%d pts</string>
 
@@ -54,6 +55,8 @@
     <string name="cd_game_modes_icon">Game Modes</string>
     <string name="cd_gradient_map">Gradient map</string>
     <string name="cd_color_cell">Color cell</string>
+    <string name="cd_star_earned">Star earned</string>
+    <string name="cd_star_unearned">Star not earned</string>
 
 
     <!-- Share -->
