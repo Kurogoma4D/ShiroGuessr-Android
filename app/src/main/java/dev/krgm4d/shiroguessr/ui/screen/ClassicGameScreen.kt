@@ -1,7 +1,6 @@
 package dev.krgm4d.shiroguessr.ui.screen
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Palette
@@ -25,8 +23,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -34,12 +30,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.krgm4d.shiroguessr.R
 import dev.krgm4d.shiroguessr.model.GameState
-import dev.krgm4d.shiroguessr.model.RGBColor
 import dev.krgm4d.shiroguessr.ui.component.ColorPalette
 import dev.krgm4d.shiroguessr.ui.component.GameControls
 import dev.krgm4d.shiroguessr.ui.component.MdFilledButton
 import dev.krgm4d.shiroguessr.ui.component.RoundResultDialog
 import dev.krgm4d.shiroguessr.ui.component.ScoreBoard
+import dev.krgm4d.shiroguessr.ui.component.TargetColorFrame
 import dev.krgm4d.shiroguessr.ui.theme.ShiroGuessrAndroidTheme
 import dev.krgm4d.shiroguessr.viewmodel.ClassicGamePhase
 import dev.krgm4d.shiroguessr.viewmodel.ClassicGameViewModel
@@ -106,9 +102,11 @@ fun ClassicGameScreen(
 
                         Spacer(modifier = Modifier.height(20.dp))
 
-                        // Target color display
-                        TargetColorDisplay(
+                        // Target color display (gallery-frame style)
+                        TargetColorFrame(
                             targetColor = currentRound.targetColor,
+                            showCSSValue = false,
+                            modifier = Modifier.padding(horizontal = 16.dp),
                         )
 
                         Spacer(modifier = Modifier.height(20.dp))
@@ -211,51 +209,6 @@ private fun StartScreen(
         }
 
         Spacer(modifier = Modifier.height(40.dp))
-    }
-}
-
-/**
- * Displays the target color that the player needs to match.
- *
- * Shows a label, a large colored rectangle, and the CSS color value.
- */
-@Composable
-private fun TargetColorDisplay(
-    targetColor: RGBColor,
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.padding(horizontal = 16.dp),
-    ) {
-        Text(
-            text = stringResource(R.string.game_find_this_color),
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurface,
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(80.dp)
-                .shadow(4.dp, RoundedCornerShape(16.dp))
-                .clip(RoundedCornerShape(16.dp))
-                .background(targetColor.toComposeColor())
-                .border(
-                    width = 2.dp,
-                    color = MaterialTheme.colorScheme.outline,
-                    shape = RoundedCornerShape(16.dp),
-                ),
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(
-            text = targetColor.toCSSString(),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
     }
 }
 

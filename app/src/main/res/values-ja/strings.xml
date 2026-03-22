@@ -9,6 +9,7 @@
 
     <!-- Game -->
     <string name="game_find_this_color">この色を探してください</string>
+    <string name="game_target_label">TARGET</string>
     <string name="game_map_title">マップモード</string>
     <string name="game_map_tagline">グラデーションマップから正しい白を見つけよう！</string>
     <string name="game_start">ゲームスタート</string>

@@ -35,6 +35,7 @@ val TimerCritical = Color(0xFFC87E7E)    // タイマー危険
 
 // Color Sample Display
 val SampleBorder = Color(0xFF3A3A45)     // 色サンプル枠線
+val SampleFrameNeutral = Color(0xFF787880) // ニュートラルグレーフレーム（白色の溶け込み防止）
 
 // Error Container (dark variant)
 val ErrorContainerDark = Color(0xFF3D1F1F)  // エラー背景
@@ -62,6 +63,7 @@ data class ShiroGuessrColors(
     val timerWarning: Color = TimerWarning,
     val timerCritical: Color = TimerCritical,
     val sampleBorder: Color = SampleBorder,
+    val sampleFrameNeutral: Color = SampleFrameNeutral,
 )
 
 val LocalShiroGuessrColors = staticCompositionLocalOf { ShiroGuessrColors() }
