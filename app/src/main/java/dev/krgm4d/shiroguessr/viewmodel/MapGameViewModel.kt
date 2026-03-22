@@ -247,6 +247,7 @@ class MapGameViewModel(
                 phase = MapGamePhase.Completed,
                 gameState = updatedGameState,
                 totalRounds = totalRounds,
+                timeLimit = timeLimit,
             )
         }
     }

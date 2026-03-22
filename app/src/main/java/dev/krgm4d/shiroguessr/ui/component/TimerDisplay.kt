@@ -81,25 +81,18 @@ fun TimerDisplay(
     )
 
     // Pulse animation: scale oscillation for warning/critical states
-    val pulseScale = if (isPulsing) {
-        val pulseDuration = if (isCritical) 400 else 700
-        val infiniteTransition = rememberInfiniteTransition(label = "timerPulse")
-        val scale by infiniteTransition.animateFloat(
-            initialValue = 1f,
-            targetValue = 1.12f,
-            animationSpec = infiniteRepeatable(
-                animation = tween(
-                    durationMillis = pulseDuration,
-                    easing = LinearEasing,
-                ),
-                repeatMode = RepeatMode.Reverse,
-            ),
-            label = "pulseScale",
-        )
-        scale
-    } else {
-        1f
-    }
+    val pulseDuration = if (isCritical) 400 else 700
+    val infiniteTransition = rememberInfiniteTransition(label = "timerPulse")
+    val animatedScale by infiniteTransition.animateFloat(
+        initialValue = 1f,
+        targetValue = if (isPulsing) 1.12f else 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = pulseDuration, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse,
+        ),
+        label = "pulseScale",
+    )
+    val pulseScale = if (isPulsing) animatedScale else 1f
 
     // Progress bar fraction
     val progress = if (totalTime > 0) {
