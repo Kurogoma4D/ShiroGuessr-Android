@@ -15,6 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      actions: write
 
     steps:
       - name: Checkout repository
@@ -75,12 +76,13 @@ jobs:
           mkdir -p debug-symbols
           if [ -d "$SYMBOLS_DIR" ]; then
             cp -r "$SYMBOLS_DIR" debug-symbols/native-debug-symbols
+            rm -rf debug-symbols/native-debug-symbols/x86 debug-symbols/native-debug-symbols/x86_64
           fi
           if [ -f "$MAPPING_FILE" ]; then
             cp "$MAPPING_FILE" debug-symbols/mapping.txt
           fi
           if [ "$(ls -A debug-symbols)" ]; then
-            cd debug-symbols && zip -r ../debug-symbols.zip . && cd ..
+            cd debug-symbols && zip -r ../debug-symbols.zip . -x "*.DS_Store" "*__MACOSX*" && cd ..
           fi
 
       - name: Create GitHub Release
