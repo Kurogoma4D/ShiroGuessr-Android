@@ -75,6 +75,7 @@ fun ScoreBoard(
 
     LaunchedEffect(currentScore) {
         if (currentScore != previousScore && currentScore > previousScore) {
+            previousScore = currentScore  // Update immediately before animating
             // Score increased — trigger bounce animation
             scoreScale.animateTo(
                 targetValue = 1.15f,
@@ -90,8 +91,9 @@ fun ScoreBoard(
                     stiffness = 300f,
                 ),
             )
+        } else {
+            previousScore = currentScore
         }
-        previousScore = currentScore
     }
 
     Surface(
