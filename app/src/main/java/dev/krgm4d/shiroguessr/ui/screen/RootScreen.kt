@@ -1,5 +1,6 @@
 package dev.krgm4d.shiroguessr.ui.screen
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,7 +32,7 @@ import dev.krgm4d.shiroguessr.service.InterstitialAdManager
 import dev.krgm4d.shiroguessr.service.ShareService
 import dev.krgm4d.shiroguessr.service.TutorialManager
 import dev.krgm4d.shiroguessr.ui.component.GameHeader
-import dev.krgm4d.shiroguessr.ui.component.TutorialBottomSheet
+import dev.krgm4d.shiroguessr.ui.component.TutorialOverlay
 import dev.krgm4d.shiroguessr.ui.theme.ShiroGuessrAndroidTheme
 import dev.krgm4d.shiroguessr.viewmodel.GameMode
 import dev.krgm4d.shiroguessr.viewmodel.ResultViewModel
@@ -71,143 +72,146 @@ fun RootScreen(
     val isOnStartScreen = currentRoute
         ?.contains(Screen.Start::class.qualifiedName.orEmpty()) == true
 
-    if (showTutorial) {
-        TutorialBottomSheet(
-            onDismiss = {
-                manager.markTutorialAsShown()
-                showTutorial = false
-            },
-        )
-    }
-
-    Scaffold(
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
-        contentWindowInsets = WindowInsets(0),
-    ) { scaffoldPadding ->
-        Column(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(scaffoldPadding),
-        ) {
-            // Hide the header on the Start screen; show it during gameplay
-            if (!isOnStartScreen) {
-                GameHeader(
-                    onModeButtonTap = {
-                        // Navigate back to the Start screen for mode selection
-                        navController.navigate(Screen.Start) {
-                            popUpTo(navController.graph.id) { inclusive = true }
-                            launchSingleTop = true
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                )
-            }
-
-            NavHost(
-                navController = navController,
-                startDestination = Screen.Start,
-                modifier = Modifier.weight(1f),
+    Box(modifier = modifier.fillMaxSize()) {
+        Scaffold(
+            snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+            contentWindowInsets = WindowInsets(0),
+        ) { scaffoldPadding ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(scaffoldPadding),
             ) {
-                composable<Screen.Start> {
-                    StartScreen(
-                        onClassicSelected = {
-                            navController.navigate(Screen.Classic(autoStart = true)) {
+                // Hide the header on the Start screen; show it during gameplay
+                if (!isOnStartScreen) {
+                    GameHeader(
+                        onModeButtonTap = {
+                            // Navigate back to the Start screen for mode selection
+                            navController.navigate(Screen.Start) {
                                 popUpTo(navController.graph.id) { inclusive = true }
                                 launchSingleTop = true
                             }
                         },
-                        onMapSelected = {
-                            navController.navigate(Screen.Map(autoStart = true)) {
-                                popUpTo(navController.graph.id) { inclusive = true }
-                                launchSingleTop = true
-                            }
-                        },
+                        modifier = Modifier.fillMaxWidth(),
                     )
                 }
-                composable<Screen.Classic> { backStackEntry ->
-                    val route = backStackEntry.toRoute<Screen.Classic>()
-                    ClassicGameScreen(
-                        autoStart = route.autoStart,
-                        onGameCompleted = { gameState ->
-                            resultViewModel.setGameState(gameState, GameMode.Classic)
-                            navController.navigate(Screen.Result(gameMode = GameMode.Classic.name)) {
-                                popUpTo(navController.graph.id) { inclusive = true }
-                                launchSingleTop = true
-                            }
-                        },
-                    )
-                }
-                composable<Screen.Map> { backStackEntry ->
-                    val route = backStackEntry.toRoute<Screen.Map>()
-                    MapGameScreen(
-                        autoStart = route.autoStart,
-                        onGameCompleted = { gameState ->
-                            resultViewModel.setGameState(gameState, GameMode.Map)
-                            navController.navigate(Screen.Result(gameMode = GameMode.Map.name)) {
-                                popUpTo(navController.graph.id) { inclusive = true }
-                                launchSingleTop = true
-                            }
-                        },
-                    )
-                }
-                composable<Screen.Result> { backStackEntry ->
-                    val resultRoute = backStackEntry.toRoute<Screen.Result>()
-                    val gameMode = GameMode.valueOf(resultRoute.gameMode)
 
-                    // Preload the next interstitial ad when entering the result screen
-                    LaunchedEffect(Unit) {
-                        InterstitialAdManager.loadAd(context)
+                NavHost(
+                    navController = navController,
+                    startDestination = Screen.Start,
+                    modifier = Modifier.weight(1f),
+                ) {
+                    composable<Screen.Start> {
+                        StartScreen(
+                            onClassicSelected = {
+                                navController.navigate(Screen.Classic(autoStart = true)) {
+                                    popUpTo(navController.graph.id) { inclusive = true }
+                                    launchSingleTop = true
+                                }
+                            },
+                            onMapSelected = {
+                                navController.navigate(Screen.Map(autoStart = true)) {
+                                    popUpTo(navController.graph.id) { inclusive = true }
+                                    launchSingleTop = true
+                                }
+                            },
+                        )
                     }
-
-                    val navigateToNextGame = {
-                        resultViewModel.clearGameState()
-                        val target: Screen = when (gameMode) {
-                            GameMode.Classic -> Screen.Classic(autoStart = true)
-                            GameMode.Map -> Screen.Map(autoStart = true)
-                        }
-                        // Pop the entire back stack (including start destination)
-                        // and navigate to the target game mode, so "Play Again"
-                        // always returns to the same mode the user was playing.
-                        navController.navigate(target) {
-                            popUpTo(navController.graph.id) { inclusive = true }
-                            launchSingleTop = true
-                        }
+                    composable<Screen.Classic> { backStackEntry ->
+                        val route = backStackEntry.toRoute<Screen.Classic>()
+                        ClassicGameScreen(
+                            autoStart = route.autoStart,
+                            onGameCompleted = { gameState ->
+                                resultViewModel.setGameState(gameState, GameMode.Classic)
+                                navController.navigate(Screen.Result(gameMode = GameMode.Classic.name)) {
+                                    popUpTo(navController.graph.id) { inclusive = true }
+                                    launchSingleTop = true
+                                }
+                            },
+                        )
                     }
+                    composable<Screen.Map> { backStackEntry ->
+                        val route = backStackEntry.toRoute<Screen.Map>()
+                        MapGameScreen(
+                            autoStart = route.autoStart,
+                            onGameCompleted = { gameState ->
+                                resultViewModel.setGameState(gameState, GameMode.Map)
+                                navController.navigate(Screen.Result(gameMode = GameMode.Map.name)) {
+                                    popUpTo(navController.graph.id) { inclusive = true }
+                                    launchSingleTop = true
+                                }
+                            },
+                        )
+                    }
+                    composable<Screen.Result> { backStackEntry ->
+                        val resultRoute = backStackEntry.toRoute<Screen.Result>()
+                        val gameMode = GameMode.valueOf(resultRoute.gameMode)
 
-                    ResultScreen(
-                        onPlayAgain = {
-                            val activity = context as? Activity
-                            if (activity != null) {
-                                // Show interstitial ad, then navigate on dismiss
-                                InterstitialAdManager.showAd(activity) {
+                        // Preload the next interstitial ad when entering the result screen
+                        LaunchedEffect(Unit) {
+                            InterstitialAdManager.loadAd(context)
+                        }
+
+                        val navigateToNextGame = {
+                            resultViewModel.clearGameState()
+                            val target: Screen = when (gameMode) {
+                                GameMode.Classic -> Screen.Classic(autoStart = true)
+                                GameMode.Map -> Screen.Map(autoStart = true)
+                            }
+                            // Pop the entire back stack (including start destination)
+                            // and navigate to the target game mode, so "Play Again"
+                            // always returns to the same mode the user was playing.
+                            navController.navigate(target) {
+                                popUpTo(navController.graph.id) { inclusive = true }
+                                launchSingleTop = true
+                            }
+                        }
+
+                        ResultScreen(
+                            onPlayAgain = {
+                                val activity = context as? Activity
+                                if (activity != null) {
+                                    // Show interstitial ad, then navigate on dismiss
+                                    InterstitialAdManager.showAd(activity) {
+                                        navigateToNextGame()
+                                    }
+                                } else {
+                                    // Fallback: navigate without ad if Activity unavailable
                                     navigateToNextGame()
                                 }
-                            } else {
-                                // Fallback: navigate without ad if Activity unavailable
-                                navigateToNextGame()
-                            }
-                        },
-                        onShareResults = {
-                            val gameState = resultViewModel.gameState.value
-                            if (gameState != null) {
-                                shareService.shareResults(context, gameState)
-                            }
-                        },
-                        onCopyToClipboard = {
-                            val gameState = resultViewModel.gameState.value
-                            if (gameState != null) {
-                                shareService.copyToClipboard(context, gameState)
-                                coroutineScope.launch {
-                                    snackbarHostState.showSnackbar(
-                                        context.getString(R.string.share_copied_to_clipboard),
-                                    )
+                            },
+                            onShareResults = {
+                                val gameState = resultViewModel.gameState.value
+                                if (gameState != null) {
+                                    shareService.shareResults(context, gameState)
                                 }
-                            }
-                        },
-                        resultViewModel = resultViewModel,
-                    )
+                            },
+                            onCopyToClipboard = {
+                                val gameState = resultViewModel.gameState.value
+                                if (gameState != null) {
+                                    shareService.copyToClipboard(context, gameState)
+                                    coroutineScope.launch {
+                                        snackbarHostState.showSnackbar(
+                                            context.getString(R.string.share_copied_to_clipboard),
+                                        )
+                                    }
+                                }
+                            },
+                            resultViewModel = resultViewModel,
+                        )
+                    }
                 }
             }
+        }
+
+        // Fullscreen tutorial overlay rendered on top of all content
+        if (showTutorial) {
+            TutorialOverlay(
+                onDismiss = {
+                    manager.markTutorialAsShown()
+                    showTutorial = false
+                },
+            )
         }
     }
 }
