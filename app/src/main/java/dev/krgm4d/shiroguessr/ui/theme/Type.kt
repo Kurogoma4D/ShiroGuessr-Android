@@ -24,6 +24,11 @@ private val googleFontProvider = GoogleFont.Provider(
 // Font Definitions
 // ---------------------------------------------------------------------------
 
+// NOTE: DmSerifDisplayFontFamily, OutfitFontFamily, and NotoSansJpFontFamily are downloaded
+// at runtime via Google Mobile Services (GMS) font provider. If GMS is unavailable (e.g. on
+// devices without Google Play Services), these fonts will fall back to system defaults.
+// Bundling all three font families would add significant APK size, so runtime download is preferred.
+
 /**
  * DM Serif Display -- used for Display role (scores, large numbers).
  * Serif elegance for the gallery aesthetic.
