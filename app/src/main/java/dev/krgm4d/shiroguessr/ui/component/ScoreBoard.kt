@@ -1,18 +1,21 @@
 package dev.krgm4d.shiroguessr.ui.component
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -24,11 +27,16 @@ import dev.krgm4d.shiroguessr.ui.theme.CanvasElevated
 import dev.krgm4d.shiroguessr.ui.theme.ShiroGuessrAndroidTheme
 
 /**
- * Displays the current round number and cumulative score.
+ * Displays the round dot indicator and cumulative score.
  *
  * Corresponds to the iOS version's `ScoreBoard.swift`.
- * Shows "Round X/Y" on the left and "Score" on the right,
+ * Shows a dot-based round indicator on the left and "Score" on the right,
  * separated by a vertical divider.
+ *
+ * The round indicator uses dot/step indicators per the Shiro Gallery guideline:
+ * - Completed rounds: filled AccentPrimary
+ * - Current round: AccentPrimary ring + pulse animation
+ * - Upcoming rounds: TextMuted outline ring
  *
  * Shiro Gallery Card/Panel style:
  * - Background: CanvasElevated (#1A1A22)
@@ -59,28 +67,21 @@ fun ScoreBoard(
             .padding(horizontal = 16.dp),
     ) {
         Row(
-            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .height(IntrinsicSize.Min)
+                .padding(16.dp),
         ) {
-            // Round indicator
-            Column {
-                Text(
-                    text = stringResource(R.string.round_result_round_label),
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "$currentRound/$totalRounds",
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    fontWeight = FontWeight.SemiBold,
-                )
-            }
+            // Round dot indicator
+            RoundIndicator(
+                currentRound = currentRound,
+                totalRounds = totalRounds,
+            )
 
             // Vertical divider
             VerticalDivider(
                 modifier = Modifier
-                    .height(44.dp)
+                    .fillMaxHeight()
                     .padding(horizontal = 24.dp),
                 color = MaterialTheme.colorScheme.outlineVariant,
             )
@@ -106,11 +107,11 @@ fun ScoreBoard(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, backgroundColor = 0xFF0D0D12)
 @Composable
 private fun ScoreBoardPreview() {
     ShiroGuessrAndroidTheme {
-        Column {
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             ScoreBoard(currentRound = 1, totalRounds = 5, currentScore = 0)
             ScoreBoard(currentRound = 3, totalRounds = 5, currentScore = 2450)
             ScoreBoard(currentRound = 5, totalRounds = 5, currentScore = 4800)
