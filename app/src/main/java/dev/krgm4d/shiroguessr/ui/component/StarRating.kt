@@ -10,7 +10,7 @@ package dev.krgm4d.shiroguessr.ui.component
  * - 13-20: 2 stars (fair)
  * - 21+: 1 star (needs improvement)
  */
-fun calculateStarRating(distance: Int): Int {
+internal fun calculateStarRating(distance: Int): Int {
     return when {
         distance <= 2 -> 5
         distance <= 6 -> 4
