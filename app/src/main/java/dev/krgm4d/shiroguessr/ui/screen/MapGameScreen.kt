@@ -1,5 +1,9 @@
 package dev.krgm4d.shiroguessr.ui.screen
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.EaseInOut
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -8,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -23,16 +28,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.launch
 import dev.krgm4d.shiroguessr.R
 import dev.krgm4d.shiroguessr.model.GameState
 import dev.krgm4d.shiroguessr.model.RGBColor
@@ -55,6 +67,11 @@ import dev.krgm4d.shiroguessr.viewmodel.MapGameViewModel
  * 2. Active game with score board, timer, target color, gradient map, and controls
  * 3. Result animation sequence followed by RoundResultDialog
  *
+ * Round transitions include:
+ * - Target color fade-in animation (300ms EaseInOut)
+ * - Gradient map slide-in from below with spring physics (stiffness: 300, dampingRatio: 0.7)
+ * - Controls staggered slide-in (80ms delay)
+ *
  * After 5 rounds, navigates to ResultScreen.
  *
  * @param onGameCompleted Callback invoked with the final game state when all rounds are done
@@ -69,6 +86,10 @@ fun MapGameScreen(
     viewModel: MapGameViewModel = viewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val coroutineScope = rememberCoroutineScope()
+
+    // Whether the submit button is in its brief freeze state (100ms).
+    var isSubmitFrozen by remember { mutableStateOf(false) }
 
     // Auto-start the game when navigating from Play Again
     LaunchedEffect(autoStart) {
@@ -110,6 +131,58 @@ fun MapGameScreen(
                         min(screenWidth - 48.dp, 360.dp)
                     }
 
+                    // Round transition animations keyed on round number.
+                    // Target color fades in; map slides in from below.
+                    val targetAlpha = remember(currentRound.roundNumber) { Animatable(0f) }
+                    val mapOffsetY = remember(currentRound.roundNumber) { Animatable(200f) }
+                    val controlsOffsetY = remember(currentRound.roundNumber) { Animatable(120f) }
+                    val controlsAlpha = remember(currentRound.roundNumber) { Animatable(0f) }
+
+                    LaunchedEffect(currentRound.roundNumber) {
+                        // Target color fade-in (300ms EaseInOut tween)
+                        targetAlpha.animateTo(
+                            targetValue = 1f,
+                            animationSpec = tween(
+                                durationMillis = 300,
+                                easing = EaseInOut,
+                            ),
+                        )
+                    }
+
+                    LaunchedEffect(currentRound.roundNumber) {
+                        // Map slide-in from below (spring: stiffness 300, dampingRatio 0.7)
+                        mapOffsetY.animateTo(
+                            targetValue = 0f,
+                            animationSpec = spring(
+                                dampingRatio = 0.7f,
+                                stiffness = 300f,
+                            ),
+                        )
+                    }
+
+                    LaunchedEffect(currentRound.roundNumber) {
+                        // Controls staggered slide-in
+                        kotlinx.coroutines.delay(80L)
+                        controlsAlpha.animateTo(
+                            targetValue = 1f,
+                            animationSpec = tween(
+                                durationMillis = 300,
+                                easing = EaseInOut,
+                            ),
+                        )
+                    }
+
+                    LaunchedEffect(currentRound.roundNumber) {
+                        kotlinx.coroutines.delay(80L)
+                        controlsOffsetY.animateTo(
+                            targetValue = 0f,
+                            animationSpec = spring(
+                                dampingRatio = 0.7f,
+                                stiffness = 300f,
+                            ),
+                        )
+                    }
+
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier
@@ -135,14 +208,15 @@ fun MapGameScreen(
 
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        // Target color display
+                        // Target color display with fade-in
                         MapTargetColorDisplay(
                             targetColor = currentRound.targetColor,
+                            modifier = Modifier.alpha(targetAlpha.value),
                         )
 
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        // Gradient map view
+                        // Gradient map view with slide-in from below
                         GradientMapView(
                             gradientMap = gradientMap,
                             userPin = currentRound.pin,
@@ -154,18 +228,35 @@ fun MapGameScreen(
                             onPinPlacement = { coordinate ->
                                 viewModel.placePin(coordinate)
                             },
-                            modifier = Modifier.padding(horizontal = 16.dp),
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp)
+                                .offset {
+                                    IntOffset(0, mapOffsetY.value.dp.roundToPx())
+                                },
                         )
 
                         Spacer(modifier = Modifier.weight(1f))
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        // Game controls
+                        // Game controls with staggered slide-in and submit freeze
                         GameControls(
-                            canSubmit = uiState.hasPinPlaced && !uiState.isAnimatingResult,
+                            canSubmit = uiState.hasPinPlaced && !uiState.isAnimatingResult && !isSubmitFrozen,
                             canProceed = uiState.isRoundSubmitted && !uiState.isAnimatingResult,
-                            onSubmit = { viewModel.submitGuess() },
+                            onSubmit = {
+                                // Brief freeze (100ms) before submitting to build suspense
+                                coroutineScope.launch {
+                                    isSubmitFrozen = true
+                                    kotlinx.coroutines.delay(100L)
+                                    viewModel.submitGuess()
+                                    isSubmitFrozen = false
+                                }
+                            },
                             onNext = { viewModel.nextRound() },
+                            modifier = Modifier
+                                .alpha(controlsAlpha.value)
+                                .offset {
+                                    IntOffset(0, controlsOffsetY.value.dp.roundToPx())
+                                },
                         )
 
                         Spacer(modifier = Modifier.height(20.dp))
@@ -262,14 +353,18 @@ private fun MapStartScreen(
  * Displays the target color that the player needs to find on the gradient map.
  *
  * Shows the color in a rounded rectangle with a label.
+ *
+ * @param targetColor The RGB color to display
+ * @param modifier Optional modifier for the root layout
  */
 @Composable
 private fun MapTargetColorDisplay(
     targetColor: RGBColor,
+    modifier: Modifier = Modifier,
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
+        modifier = modifier
             .padding(horizontal = 16.dp)
             .fillMaxWidth()
             .background(
