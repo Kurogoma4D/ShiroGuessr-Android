@@ -55,6 +55,7 @@ data class MapGameUiState(
     val lineDrawProgress: Float = 0f,
     val totalRounds: Int = 5,
     val timeRemaining: Int = 60,
+    val timeLimit: Int = 60,
 ) {
     /** The current round based on the game state index. */
     val currentRound: GameRound?
@@ -154,6 +155,7 @@ class MapGameViewModel(
             currentGradientMap = gradientMap,
             totalRounds = totalRounds,
             timeRemaining = timeLimit,
+            timeLimit = timeLimit,
         )
 
         // Start timer
@@ -233,6 +235,7 @@ class MapGameViewModel(
                 currentGradientMap = gradientMap,
                 totalRounds = totalRounds,
                 timeRemaining = timeLimit,
+                timeLimit = timeLimit,
             )
 
             // Start timer for next round
@@ -244,6 +247,7 @@ class MapGameViewModel(
                 phase = MapGamePhase.Completed,
                 gameState = updatedGameState,
                 totalRounds = totalRounds,
+                timeLimit = timeLimit,
             )
         }
     }
