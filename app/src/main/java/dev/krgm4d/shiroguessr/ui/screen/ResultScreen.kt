@@ -50,6 +50,8 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -64,6 +66,7 @@ import dev.krgm4d.shiroguessr.ui.theme.AccentPrimary
 import dev.krgm4d.shiroguessr.ui.theme.ScoreHigh
 import dev.krgm4d.shiroguessr.ui.theme.ScoreLow
 import dev.krgm4d.shiroguessr.ui.theme.ScoreMid
+import dev.krgm4d.shiroguessr.ui.theme.ShiroAnimation
 import dev.krgm4d.shiroguessr.ui.theme.ShiroGuessrAndroidTheme
 import dev.krgm4d.shiroguessr.viewmodel.ResultViewModel
 import kotlinx.coroutines.delay
@@ -196,17 +199,11 @@ private fun ResultScreenContent(
             if (targetScale > 1f) {
                 burstScale.animateTo(
                     targetValue = targetScale,
-                    animationSpec = spring(
-                        dampingRatio = 0.4f,
-                        stiffness = 300f,
-                    ),
+                    animationSpec = ShiroAnimation.bounceSpring(),
                 )
                 burstScale.animateTo(
                     targetValue = 1f,
-                    animationSpec = spring(
-                        dampingRatio = 0.7f,
-                        stiffness = 300f,
-                    ),
+                    animationSpec = ShiroAnimation.standardSpring(),
                 )
             }
         }
@@ -235,7 +232,7 @@ private fun ResultScreenContent(
             // Trophy icon
             Icon(
                 imageVector = Icons.Default.EmojiEvents,
-                contentDescription = null,
+                contentDescription = stringResource(R.string.cd_trophy),
                 tint = AccentPrimary,
                 modifier = Modifier.size(80.dp),
             )
@@ -498,8 +495,16 @@ private fun ColorSwatch(
     color: RGBColor,
     label: String,
 ) {
+    val swatchDescription = stringResource(
+        R.string.cd_color_sample_rgb,
+        label,
+        color.r,
+        color.g,
+        color.b,
+    )
     Box(
         modifier = Modifier
+            .semantics { contentDescription = swatchDescription }
             .size(width = 40.dp, height = 32.dp)
             .clip(RoundedCornerShape(6.dp))
             .background(color.toComposeColor())
@@ -523,9 +528,16 @@ private fun MiniStarRating(
     filledStars: Int,
     modifier: Modifier = Modifier,
 ) {
+    val ratingDescription = stringResource(
+        R.string.cd_star_rating,
+        filledStars,
+        5,
+    )
     Row(
         horizontalArrangement = Arrangement.spacedBy(1.dp),
-        modifier = modifier,
+        modifier = modifier.semantics {
+            contentDescription = ratingDescription
+        },
     ) {
         for (i in 1..5) {
             Icon(

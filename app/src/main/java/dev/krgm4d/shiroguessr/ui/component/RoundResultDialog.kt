@@ -43,6 +43,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -54,6 +56,7 @@ import dev.krgm4d.shiroguessr.ui.theme.AccentPrimary
 import dev.krgm4d.shiroguessr.ui.theme.DmSerifDisplayFontFamily
 import dev.krgm4d.shiroguessr.ui.theme.JetBrainsMonoFontFamily
 import dev.krgm4d.shiroguessr.ui.theme.SampleBorder
+import dev.krgm4d.shiroguessr.ui.theme.ShiroAnimation
 import dev.krgm4d.shiroguessr.ui.theme.ShiroGuessrAndroidTheme
 import dev.krgm4d.shiroguessr.ui.theme.TextMuted
 import kotlinx.coroutines.launch
@@ -89,16 +92,13 @@ fun RoundResultDialog(
         launch {
             scaleAnim.animateTo(
                 targetValue = 1f,
-                animationSpec = spring(
-                    dampingRatio = 0.7f,
-                    stiffness = 300f,
-                ),
+                animationSpec = ShiroAnimation.standardSpring(),
             )
         }
         launch {
             alphaAnim.animateTo(
                 targetValue = 1f,
-                animationSpec = tween(durationMillis = 300),
+                animationSpec = ShiroAnimation.standardTween(),
             )
         }
     }
@@ -254,8 +254,19 @@ private fun ColorCircleItem(
     label: String,
     color: RGBColor,
 ) {
+    val colorDescription = stringResource(
+        R.string.cd_color_sample_rgb,
+        label,
+        color.r,
+        color.g,
+        color.b,
+    )
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.semantics {
+            contentDescription = colorDescription
+        },
     ) {
         Text(
             text = label,
@@ -309,11 +320,13 @@ private fun ScoreProgressRing(
     val progress = (score.toFloat() / maxScore).coerceIn(0f, 1f)
     val trackColor = TextMuted.copy(alpha = 0.3f)
     val progressColor = AccentPrimary
+    val scoreDescription = stringResource(R.string.cd_score_ring, score, maxScore)
 
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
             .size(120.dp)
+            .semantics { contentDescription = scoreDescription }
             .drawBehind {
                 val strokeWidth = 8.dp.toPx()
                 val arcSize = size.minDimension - strokeWidth
@@ -376,9 +389,16 @@ private fun StarRating(
     totalStars: Int,
     modifier: Modifier = Modifier,
 ) {
+    val ratingDescription = stringResource(
+        R.string.cd_star_rating,
+        filledStars,
+        totalStars,
+    )
     Row(
         horizontalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = modifier,
+        modifier = modifier.semantics {
+            contentDescription = ratingDescription
+        },
     ) {
         for (i in 1..totalStars) {
             Icon(

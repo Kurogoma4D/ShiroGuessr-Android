@@ -60,11 +60,18 @@
 
     <!-- Accessibility / contentDescription -->
     <string name="cd_target_icon">ターゲット</string>
-    <string name="cd_game_modes_icon">ゲームモード</string>
-    <string name="cd_gradient_map">グラデーションマップ</string>
+    <string name="cd_game_modes_icon">ゲームモード切り替え</string>
+    <string name="cd_gradient_map">ピンを配置するグラデーションマップ</string>
     <string name="cd_color_cell">カラーセル</string>
+    <string name="cd_color_cell_rgb">カラーセル: 赤 %1$d、緑 %2$d、青 %3$d</string>
+    <string name="cd_color_sample_rgb">%1$sの色: 赤 %2$d、緑 %3$d、青 %4$d</string>
     <string name="cd_star_earned">獲得スター</string>
     <string name="cd_star_unearned">未獲得スター</string>
+    <string name="cd_star_rating">%2$d 個中 %1$d 個のスター</string>
+    <string name="cd_score_ring">スコア: %2$d 点中 %1$d 点</string>
+    <string name="cd_round_indicator">%2$d ラウンド中 %1$d ラウンド目</string>
+    <string name="cd_timer_remaining">残り %1$d 秒</string>
+    <string name="cd_trophy">トロフィー</string>
 
 
     <!-- Share -->

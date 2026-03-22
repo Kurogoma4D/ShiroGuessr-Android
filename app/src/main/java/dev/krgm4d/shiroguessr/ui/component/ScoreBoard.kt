@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import dev.krgm4d.shiroguessr.R
 import dev.krgm4d.shiroguessr.ui.theme.AccentPrimary
 import dev.krgm4d.shiroguessr.ui.theme.CanvasElevated
+import dev.krgm4d.shiroguessr.ui.theme.ShiroAnimation
 import dev.krgm4d.shiroguessr.ui.theme.ShiroGuessrAndroidTheme
 import dev.krgm4d.shiroguessr.ui.theme.TextSecondary
 
@@ -79,17 +80,11 @@ fun ScoreBoard(
             // Score increased — trigger bounce animation
             scoreScale.animateTo(
                 targetValue = 1.15f,
-                animationSpec = spring(
-                    dampingRatio = 0.4f,
-                    stiffness = 300f,
-                ),
+                animationSpec = ShiroAnimation.bounceSpring(),
             )
             scoreScale.animateTo(
                 targetValue = 1f,
-                animationSpec = spring(
-                    dampingRatio = 0.7f,
-                    stiffness = 300f,
-                ),
+                animationSpec = ShiroAnimation.standardSpring(),
             )
         } else {
             previousScore = currentScore
