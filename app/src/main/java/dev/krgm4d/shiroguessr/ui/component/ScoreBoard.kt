@@ -14,7 +14,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -54,15 +53,10 @@ fun ScoreBoard(
     Surface(
         shape = panelShape,
         color = CanvasElevated,
+        shadowElevation = 16.dp,
         border = BorderStroke(1.dp, Color(0xFF2A2A35)),
         modifier = modifier
-            .padding(horizontal = 16.dp)
-            .shadow(
-                elevation = 16.dp,
-                shape = panelShape,
-                ambientColor = Color.Black.copy(alpha = 0.4f),
-                spotColor = Color.Black.copy(alpha = 0.4f),
-            ),
+            .padding(horizontal = 16.dp),
     ) {
         Row(
             modifier = Modifier.padding(16.dp),

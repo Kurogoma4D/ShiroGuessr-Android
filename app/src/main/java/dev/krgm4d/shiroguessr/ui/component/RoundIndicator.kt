@@ -44,6 +44,8 @@ fun RoundIndicator(
     totalRounds: Int,
     modifier: Modifier = Modifier,
 ) {
+    val clampedCurrentRound = currentRound.coerceIn(1..totalRounds)
+
     Row(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -51,8 +53,8 @@ fun RoundIndicator(
     ) {
         for (round in 1..totalRounds) {
             when {
-                round < currentRound -> CompletedDot()
-                round == currentRound -> CurrentDot()
+                round < clampedCurrentRound -> CompletedDot()
+                round == clampedCurrentRound -> CurrentDot()
                 else -> UpcomingDot()
             }
         }

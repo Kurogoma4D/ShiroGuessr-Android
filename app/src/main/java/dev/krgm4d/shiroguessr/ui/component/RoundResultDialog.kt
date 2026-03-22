@@ -137,15 +137,10 @@ private fun RoundResultContent(
         Surface(
             shape = statsShape,
             color = CanvasElevated,
+            shadowElevation = 16.dp,
             border = BorderStroke(1.dp, Color(0xFF2A2A35)),
             modifier = Modifier
-                .fillMaxWidth()
-                .shadow(
-                    elevation = 16.dp,
-                    shape = statsShape,
-                    ambientColor = Color.Black.copy(alpha = 0.4f),
-                    spotColor = Color.Black.copy(alpha = 0.4f),
-                ),
+                .fillMaxWidth(),
         ) {
         Column(
             modifier = Modifier

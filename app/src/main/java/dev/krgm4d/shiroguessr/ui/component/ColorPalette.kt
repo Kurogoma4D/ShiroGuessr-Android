@@ -25,6 +25,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import dev.krgm4d.shiroguessr.model.PaletteColor
 import dev.krgm4d.shiroguessr.model.RGBColor
@@ -68,13 +70,7 @@ fun ColorPalette(
         color = CanvasElevated,
         shadowElevation = 16.dp,
         border = BorderStroke(1.dp, Color(0xFF2A2A35)),
-        modifier = modifier
-            .shadow(
-                elevation = 16.dp,
-                shape = panelShape,
-                ambientColor = Color.Black.copy(alpha = 0.4f),
-                spotColor = Color.Black.copy(alpha = 0.4f),
-            ),
+        modifier = modifier,
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(10.dp),
@@ -157,6 +153,7 @@ private fun ColorCell(
 
     Box(
         modifier = modifier
+            .semantics { selected = isSelected }
             .scale(cellScale)
             .aspectRatio(1f)
             .shadow(
