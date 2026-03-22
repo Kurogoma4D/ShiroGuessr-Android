@@ -54,6 +54,7 @@
     <string name="cd_target_icon">ターゲット</string>
     <string name="cd_game_modes_icon">ゲームモード</string>
     <string name="cd_gradient_map">グラデーションマップ</string>
+    <string name="cd_color_cell">カラーセル</string>
 
 
     <!-- Share -->

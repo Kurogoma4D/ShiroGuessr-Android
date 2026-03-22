@@ -53,6 +53,7 @@
     <string name="cd_target_icon">Target</string>
     <string name="cd_game_modes_icon">Game Modes</string>
     <string name="cd_gradient_map">Gradient map</string>
+    <string name="cd_color_cell">Color cell</string>
 
 
     <!-- Share -->

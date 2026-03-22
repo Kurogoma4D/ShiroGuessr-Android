@@ -25,9 +25,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import dev.krgm4d.shiroguessr.R
 import dev.krgm4d.shiroguessr.model.PaletteColor
 import dev.krgm4d.shiroguessr.model.RGBColor
 import dev.krgm4d.shiroguessr.ui.theme.AccentPrimary
@@ -151,9 +154,14 @@ private fun ColorCell(
         label = "glowElevation",
     )
 
+    val colorCellDescription = stringResource(R.string.cd_color_cell)
+
     Box(
         modifier = modifier
-            .semantics { selected = isSelected }
+            .semantics {
+                contentDescription = colorCellDescription
+                selected = isSelected
+            }
             .scale(cellScale)
             .aspectRatio(1f)
             .shadow(
