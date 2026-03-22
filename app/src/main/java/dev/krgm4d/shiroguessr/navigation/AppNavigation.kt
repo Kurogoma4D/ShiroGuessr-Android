@@ -9,6 +9,10 @@ import kotlinx.serialization.Serializable
  * safe route definitions.
  */
 sealed interface Screen {
+    /** Start screen with mode selection cards. */
+    @Serializable
+    data object Start : Screen
+
     /** Classic color-guessing mode. */
     @Serializable
     data class Classic(val autoStart: Boolean = false) : Screen
