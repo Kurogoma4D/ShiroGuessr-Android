@@ -9,7 +9,8 @@ Use the `gh` command to perform repository operations.
 
 ## UI Design
 
-UI design implementation should be based on the principles of material-thinking.
+UI design implementation should follow the "Shiro Gallery" design guideline defined in the `shiro-gallery-design` skill.
+Use the skill when implementing or modifying any UI components.
 
 ## Testing
 
