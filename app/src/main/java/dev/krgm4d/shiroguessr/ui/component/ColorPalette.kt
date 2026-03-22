@@ -1,7 +1,11 @@
 package dev.krgm4d.shiroguessr.ui.component
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -11,36 +15,36 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import dev.krgm4d.shiroguessr.R
 import dev.krgm4d.shiroguessr.model.PaletteColor
 import dev.krgm4d.shiroguessr.model.RGBColor
+import dev.krgm4d.shiroguessr.ui.theme.AccentPrimary
+import dev.krgm4d.shiroguessr.ui.theme.CanvasElevated
+import dev.krgm4d.shiroguessr.ui.theme.SampleBorder
 
 /**
- * A 5x5 grid of selectable color cells.
+ * A 5x5 grid of selectable color cells following the Shiro Gallery design.
  *
  * Corresponds to the iOS version's `ColorPalette.swift`.
  * Displays palette colors in a grid layout where each cell can be tapped
- * to select a color. The selected cell shows a checkmark overlay.
+ * to select a color. The selected cell shows a gold ring animation with
+ * a subtle scale-up effect (1.05x).
  *
- * Uses a non-lazy Column/Row layout instead of LazyVerticalGrid to avoid
- * unbounded height issues when placed inside a scrollable parent.
- * Since the item count is fixed at 25, lazy loading is unnecessary.
+ * Shiro Gallery Card/Panel style:
+ * - Background: CanvasElevated (#1A1A22)
+ * - Corner radius: 16dp
+ * - Border: 1dp #2A2A35
+ * - Shadow: 0 4dp 16dp rgba(0,0,0,0.4)
  *
  * @param colors List of palette colors to display (typically 25)
  * @param selectedColor Currently selected color, or null if none
@@ -57,20 +61,28 @@ fun ColorPalette(
     modifier: Modifier = Modifier,
 ) {
     val columnsPerRow = 5
+    val panelShape = RoundedCornerShape(16.dp)
 
     Surface(
-        shape = RoundedCornerShape(12.dp),
-        color = MaterialTheme.colorScheme.surface,
-        shadowElevation = 2.dp,
-        modifier = modifier,
+        shape = panelShape,
+        color = CanvasElevated,
+        shadowElevation = 16.dp,
+        border = BorderStroke(1.dp, Color(0xFF2A2A35)),
+        modifier = modifier
+            .shadow(
+                elevation = 16.dp,
+                shape = panelShape,
+                ambientColor = Color.Black.copy(alpha = 0.4f),
+                spotColor = Color.Black.copy(alpha = 0.4f),
+            ),
     ) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
             modifier = Modifier.padding(16.dp),
         ) {
             colors.chunked(columnsPerRow).forEach { rowColors ->
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
                 ) {
                     rowColors.forEach { paletteColor ->
                         ColorCell(
@@ -92,10 +104,18 @@ fun ColorPalette(
 }
 
 /**
- * Individual color cell in the palette grid.
+ * Individual color cell in the palette grid (Shiro Gallery style).
  *
- * Shows the color as a rounded square. When selected, displays a primary-colored
- * border and a checkmark icon overlay.
+ * Shows the color as a rounded square with 16dp corner radius.
+ * When selected, displays a gold ring border (2.5dp AccentPrimary) with
+ * a glow effect and a scale-up animation (1.05x).
+ *
+ * Shiro Gallery Color Sample Cell style:
+ * - Corner radius: 16dp
+ * - Border default: 1.5dp SampleBorder (#3A3A45)
+ * - Border selected: 2.5dp AccentPrimary (#C9A96E) with glow
+ * - Shadow: 0 2dp 6dp rgba(0,0,0,0.3)
+ * - Selected scale: 1.05
  */
 @Composable
 private fun ColorCell(
@@ -105,37 +125,58 @@ private fun ColorCell(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val cellShape = RoundedCornerShape(16.dp)
+
     val borderColor by animateColorAsState(
-        targetValue = if (isSelected) {
-            MaterialTheme.colorScheme.primary
-        } else {
-            MaterialTheme.colorScheme.outlineVariant
-        },
+        targetValue = if (isSelected) AccentPrimary else SampleBorder,
         animationSpec = tween(durationMillis = 200),
         label = "borderColor",
     )
 
-    val borderWidth = if (isSelected) 3.dp else 1.dp
+    val borderWidth by animateDpAsState(
+        targetValue = if (isSelected) 2.5.dp else 1.5.dp,
+        animationSpec = tween(durationMillis = 200),
+        label = "borderWidth",
+    )
+
+    val cellScale by animateFloatAsState(
+        targetValue = if (isSelected) 1.05f else 1.0f,
+        animationSpec = spring(
+            dampingRatio = 0.7f,
+            stiffness = 300f,
+        ),
+        label = "cellScale",
+    )
+
+    // Glow shadow elevation when selected
+    val glowElevation by animateDpAsState(
+        targetValue = if (isSelected) 8.dp else 2.dp,
+        animationSpec = tween(durationMillis = 200),
+        label = "glowElevation",
+    )
 
     Box(
-        contentAlignment = Alignment.Center,
         modifier = modifier
+            .scale(cellScale)
             .aspectRatio(1f)
-            .clip(RoundedCornerShape(8.dp))
+            .shadow(
+                elevation = glowElevation,
+                shape = cellShape,
+                ambientColor = if (isSelected) {
+                    AccentPrimary.copy(alpha = 0.4f)
+                } else {
+                    Color.Black.copy(alpha = 0.3f)
+                },
+                spotColor = if (isSelected) {
+                    AccentPrimary.copy(alpha = 0.4f)
+                } else {
+                    Color.Black.copy(alpha = 0.3f)
+                },
+            )
+            .clip(cellShape)
             .background(color.toComposeColor())
-            .border(borderWidth, borderColor, RoundedCornerShape(8.dp))
+            .border(borderWidth, borderColor, cellShape)
             .alpha(if (isEnabled) 1f else 0.5f)
             .clickable(enabled = isEnabled, onClick = onClick),
-    ) {
-        if (isSelected) {
-            Icon(
-                imageVector = Icons.Default.CheckCircle,
-                contentDescription = stringResource(R.string.cd_color_selected),
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier
-                    .background(Color.White, CircleShape)
-                    .padding(1.dp),
-            )
-        }
-    }
+    )
 }

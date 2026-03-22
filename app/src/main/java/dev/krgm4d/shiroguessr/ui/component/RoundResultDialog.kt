@@ -1,5 +1,6 @@
 package dev.krgm4d.shiroguessr.ui.component
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -18,6 +19,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
@@ -26,6 +28,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -34,7 +38,9 @@ import dev.krgm4d.shiroguessr.R
 import dev.krgm4d.shiroguessr.model.GameRound
 import dev.krgm4d.shiroguessr.model.PaletteColor
 import dev.krgm4d.shiroguessr.model.RGBColor
+import dev.krgm4d.shiroguessr.ui.theme.CanvasElevated
 import dev.krgm4d.shiroguessr.ui.theme.JetBrainsMonoFontFamily
+import dev.krgm4d.shiroguessr.ui.theme.SampleBorder
 import dev.krgm4d.shiroguessr.ui.theme.ShiroGuessrAndroidTheme
 
 /**
@@ -126,12 +132,24 @@ private fun RoundResultContent(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Stats section
+        // Stats section (Shiro Gallery Card/Panel style)
+        val statsShape = RoundedCornerShape(16.dp)
+        Surface(
+            shape = statsShape,
+            color = CanvasElevated,
+            border = BorderStroke(1.dp, Color(0xFF2A2A35)),
+            modifier = Modifier
+                .fillMaxWidth()
+                .shadow(
+                    elevation = 16.dp,
+                    shape = statsShape,
+                    ambientColor = Color.Black.copy(alpha = 0.4f),
+                    spotColor = Color.Black.copy(alpha = 0.4f),
+                ),
+        ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(12.dp))
-                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
                 .padding(vertical = 16.dp),
         ) {
             // Distance
@@ -181,6 +199,7 @@ private fun RoundResultContent(
                 )
             }
         }
+        }
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -221,12 +240,18 @@ private fun ColorComparisonItem(
         Box(
             modifier = Modifier
                 .size(100.dp)
-                .clip(RoundedCornerShape(12.dp))
+                .shadow(
+                    elevation = 6.dp,
+                    shape = RoundedCornerShape(16.dp),
+                    ambientColor = Color.Black.copy(alpha = 0.3f),
+                    spotColor = Color.Black.copy(alpha = 0.3f),
+                )
+                .clip(RoundedCornerShape(16.dp))
                 .background(color.toComposeColor())
                 .border(
-                    width = 1.dp,
-                    color = MaterialTheme.colorScheme.outline,
-                    shape = RoundedCornerShape(12.dp),
+                    width = 1.5.dp,
+                    color = SampleBorder,
+                    shape = RoundedCornerShape(16.dp),
                 ),
         )
 

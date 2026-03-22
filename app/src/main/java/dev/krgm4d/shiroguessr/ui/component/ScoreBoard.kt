@@ -1,5 +1,6 @@
 package dev.krgm4d.shiroguessr.ui.component
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,11 +14,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.krgm4d.shiroguessr.R
+import dev.krgm4d.shiroguessr.ui.theme.CanvasElevated
 import dev.krgm4d.shiroguessr.ui.theme.ShiroGuessrAndroidTheme
 
 /**
@@ -26,6 +30,12 @@ import dev.krgm4d.shiroguessr.ui.theme.ShiroGuessrAndroidTheme
  * Corresponds to the iOS version's `ScoreBoard.swift`.
  * Shows "Round X/Y" on the left and "Score" on the right,
  * separated by a vertical divider.
+ *
+ * Shiro Gallery Card/Panel style:
+ * - Background: CanvasElevated (#1A1A22)
+ * - Corner radius: 16dp
+ * - Border: 1dp #2A2A35
+ * - Shadow: 0 4dp 16dp rgba(0,0,0,0.4)
  *
  * @param currentRound Current round number (1-based)
  * @param totalRounds Total number of rounds in the game
@@ -39,10 +49,20 @@ fun ScoreBoard(
     currentScore: Int,
     modifier: Modifier = Modifier,
 ) {
+    val panelShape = RoundedCornerShape(16.dp)
+
     Surface(
-        shape = RoundedCornerShape(12.dp),
-        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-        modifier = modifier.padding(horizontal = 16.dp),
+        shape = panelShape,
+        color = CanvasElevated,
+        border = BorderStroke(1.dp, Color(0xFF2A2A35)),
+        modifier = modifier
+            .padding(horizontal = 16.dp)
+            .shadow(
+                elevation = 16.dp,
+                shape = panelShape,
+                ambientColor = Color.Black.copy(alpha = 0.4f),
+                spotColor = Color.Black.copy(alpha = 0.4f),
+            ),
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
