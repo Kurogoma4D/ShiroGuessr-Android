@@ -20,10 +20,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import dev.krgm4d.shiroguessr.ui.theme.JetBrainsMonoFontFamily
 import dev.krgm4d.shiroguessr.ui.theme.ShiroGuessrAndroidTheme
 
 /**
@@ -88,8 +87,7 @@ fun TimerDisplay(
             text = formattedTime,
             style = MaterialTheme.typography.titleLarge,
             color = timerColor,
-            fontWeight = FontWeight.Medium,
-            fontFamily = FontFamily.Monospace,
+            fontFamily = JetBrainsMonoFontFamily,
         )
     }
 }
