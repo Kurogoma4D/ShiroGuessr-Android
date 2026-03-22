@@ -9,6 +9,8 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -200,15 +202,20 @@ private fun ModeSelectionCard(
     )
 
     Card(
-        onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
-            .scale(scale),
+            .scale(scale)
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                onClick = onClick,
+            ),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = CanvasElevated,
         ),
-        border = CardDefaults.outlinedCardBorder().copy(
+        border = BorderStroke(
+            width = 1.dp,
             brush = Brush.linearGradient(
                 colors = listOf(
                     AccentSecondary.copy(alpha = 0.3f),
@@ -216,7 +223,6 @@ private fun ModeSelectionCard(
                 ),
             ),
         ),
-        interactionSource = interactionSource,
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
