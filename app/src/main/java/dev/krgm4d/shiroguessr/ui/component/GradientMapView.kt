@@ -10,7 +10,6 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
-import kotlinx.coroutines.delay
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -38,6 +37,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
 import dev.krgm4d.shiroguessr.R
 import dev.krgm4d.shiroguessr.model.GradientMap
 import dev.krgm4d.shiroguessr.model.MapCoordinate
@@ -92,8 +92,7 @@ fun GradientMapView(
                 ambientColor = Color.Black.copy(alpha = 0.4f),
                 spotColor = Color.Black.copy(alpha = 0.4f),
             )
-            .clip(RoundedCornerShape(4.dp))
-,
+            .clip(RoundedCornerShape(4.dp)),
     ) {
         // Dark border frame
         Box(
