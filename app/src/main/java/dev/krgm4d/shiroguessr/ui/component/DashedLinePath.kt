@@ -5,7 +5,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -16,6 +15,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import dev.krgm4d.shiroguessr.ui.theme.AccentPrimary
 import dev.krgm4d.shiroguessr.ui.theme.ShiroGuessrAndroidTheme
 
 /**
@@ -42,7 +42,7 @@ fun DashedLinePath(
     toY: Float,
     progress: Float,
     mapSize: Dp,
-    lineColor: Color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+    lineColor: Color = AccentPrimary.copy(alpha = 0.8f),
     modifier: Modifier = Modifier,
 ) {
     val animatedProgress by animateFloatAsState(
