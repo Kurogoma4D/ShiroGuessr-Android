@@ -1,9 +1,8 @@
 package dev.krgm4d.shiroguessr.ui.component
 
 import android.graphics.Bitmap
-import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.EaseInOut
 import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
@@ -45,6 +44,7 @@ import dev.krgm4d.shiroguessr.model.Pin
 import dev.krgm4d.shiroguessr.model.RGBColor
 import dev.krgm4d.shiroguessr.ui.theme.AccentPrimary
 import dev.krgm4d.shiroguessr.ui.theme.SampleBorder
+import dev.krgm4d.shiroguessr.ui.theme.ShiroAnimation
 import dev.krgm4d.shiroguessr.ui.theme.ShiroGuessrAndroidTheme
 
 /**
@@ -224,6 +224,9 @@ private fun renderGradientBitmap(gradientMap: GradientMap): ImageBitmap {
  *
  * Renders as a gold-filled circle with a white border, drop shadow, and
  * a spring-based bounce animation when first placed.
+ *
+ * Phase 4-3: Spring parameters unified to stiffness 300 with bounce
+ * damping ratio (0.4) for intentional overshoot on pin drop.
  */
 @Composable
 private fun UserPinMarker(
@@ -235,8 +238,8 @@ private fun UserPinMarker(
     val animatedOffsetY by animateFloatAsState(
         targetValue = targetOffsetY,
         animationSpec = spring(
-            dampingRatio = 0.5f,
-            stiffness = Spring.StiffnessMedium,
+            dampingRatio = ShiroAnimation.SPRING_BOUNCE_DAMPING_RATIO,
+            stiffness = ShiroAnimation.SPRING_STIFFNESS,
         ),
         label = "userPinBounce",
     )
@@ -245,8 +248,8 @@ private fun UserPinMarker(
     val animatedScale by animateFloatAsState(
         targetValue = targetScale,
         animationSpec = spring(
-            dampingRatio = 0.6f,
-            stiffness = Spring.StiffnessMedium,
+            dampingRatio = ShiroAnimation.SPRING_DAMPING_RATIO,
+            stiffness = ShiroAnimation.SPRING_STIFFNESS,
         ),
         label = "userPinScale",
     )
@@ -353,6 +356,9 @@ private fun TargetPinMarker(
  * scales up with spring physics, then continuously pulses to draw attention.
  *
  * Corresponds to the iOS version's `AnimatedTargetPin`.
+ *
+ * Phase 4-3: Spring parameters unified to stiffness 300, dampingRatio 0.7.
+ * Pulse easing unified to EaseInOut for consistency.
  */
 @Composable
 private fun AnimatedTargetPin(
@@ -364,19 +370,20 @@ private fun AnimatedTargetPin(
     val scale by animateFloatAsState(
         targetValue = targetScale,
         animationSpec = spring(
-            dampingRatio = 0.55f,
-            stiffness = Spring.StiffnessMediumLow,
+            dampingRatio = ShiroAnimation.SPRING_DAMPING_RATIO,
+            stiffness = ShiroAnimation.SPRING_STIFFNESS,
         ),
         label = "targetPinScale",
     )
 
     // Pulse animation (continuous after pop-in)
+    // Phase 4-3: unified to EaseInOut easing
     val infiniteTransition = rememberInfiniteTransition(label = "targetPinPulse")
     val pulseScale by infiniteTransition.animateFloat(
         initialValue = 1f,
         targetValue = 1.15f,
         animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 800, easing = LinearEasing),
+            animation = tween(durationMillis = 800, easing = EaseInOut),
             repeatMode = RepeatMode.Reverse,
         ),
         label = "targetPinPulseScale",
@@ -386,7 +393,7 @@ private fun AnimatedTargetPin(
         initialValue = 0.4f,
         targetValue = 0f,
         animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 800, easing = LinearEasing),
+            animation = tween(durationMillis = 800, easing = EaseInOut),
             repeatMode = RepeatMode.Reverse,
         ),
         label = "targetPinPulseAlpha",

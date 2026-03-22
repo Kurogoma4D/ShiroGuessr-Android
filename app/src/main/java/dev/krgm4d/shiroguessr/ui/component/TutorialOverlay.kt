@@ -50,6 +50,7 @@ import dev.krgm4d.shiroguessr.ui.theme.AccentPrimary
 import dev.krgm4d.shiroguessr.ui.theme.CanvasDeep
 import dev.krgm4d.shiroguessr.ui.theme.CanvasElevated
 import dev.krgm4d.shiroguessr.ui.theme.SampleBorder
+import dev.krgm4d.shiroguessr.ui.theme.ShiroAnimation
 import dev.krgm4d.shiroguessr.ui.theme.TextMuted
 import dev.krgm4d.shiroguessr.ui.theme.TextSecondary
 
@@ -102,9 +103,13 @@ fun TutorialOverlay(
                     targetState = currentPage,
                     transitionSpec = {
                         fadeIn(
-                            animationSpec = tween(durationMillis = 400),
+                            animationSpec = ShiroAnimation.standardTween(
+                                ShiroAnimation.TWEEN_DURATION_MEDIUM_MS,
+                            ),
                         ) togetherWith fadeOut(
-                            animationSpec = tween(durationMillis = 400),
+                            animationSpec = ShiroAnimation.standardTween(
+                                ShiroAnimation.TWEEN_DURATION_MEDIUM_MS,
+                            ),
                         )
                     },
                     label = "tutorialPageTransition",
@@ -525,10 +530,7 @@ private fun PageIndicator(
             val isSelected = index == currentPage
             val size by animateDpAsState(
                 targetValue = if (isSelected) 10.dp else 8.dp,
-                animationSpec = spring(
-                    dampingRatio = 0.7f,
-                    stiffness = 300f,
-                ),
+                animationSpec = ShiroAnimation.standardSpring(),
                 label = "dotSize",
             )
             Box(

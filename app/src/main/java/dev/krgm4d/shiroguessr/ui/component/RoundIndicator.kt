@@ -1,6 +1,6 @@
 package dev.krgm4d.shiroguessr.ui.component
 
-import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.EaseInOut
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -18,9 +18,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import dev.krgm4d.shiroguessr.R
 import dev.krgm4d.shiroguessr.ui.theme.AccentPrimary
+import dev.krgm4d.shiroguessr.ui.theme.ShiroAnimation
 import dev.krgm4d.shiroguessr.ui.theme.ShiroGuessrAndroidTheme
 import dev.krgm4d.shiroguessr.ui.theme.TextMuted
 
@@ -30,9 +35,12 @@ import dev.krgm4d.shiroguessr.ui.theme.TextMuted
  * Follows the Shiro Gallery design guideline:
  * - Size: 10dp per dot
  * - Completed rounds: filled AccentPrimary (#C9A96E)
- * - Current round: ring AccentPrimary + pulse animation
+ * - Current round: ring AccentPrimary + pulse animation (EaseInOut per Phase 4-3)
  * - Upcoming rounds: ring TextMuted (#5C5866)
  * - Spacing: 12dp between dots
+ *
+ * Accessibility: The entire indicator has a content description announcing
+ * the current round and total rounds for TalkBack users.
  *
  * @param currentRound Current round number (1-based)
  * @param totalRounds Total number of rounds in the game
@@ -45,11 +53,18 @@ fun RoundIndicator(
     modifier: Modifier = Modifier,
 ) {
     val clampedCurrentRound = currentRound.coerceIn(1..totalRounds)
+    val roundDescription = stringResource(
+        R.string.cd_round_indicator,
+        clampedCurrentRound,
+        totalRounds,
+    )
 
     Row(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier,
+        modifier = modifier.semantics {
+            contentDescription = roundDescription
+        },
     ) {
         for (round in 1..totalRounds) {
             when {
@@ -75,6 +90,8 @@ private fun CompletedDot() {
 
 /**
  * Ring dot with pulse animation for the current round.
+ *
+ * Uses EaseInOut easing per Shiro Gallery Phase 4-3 consistency spec.
  */
 @Composable
 private fun CurrentDot() {
@@ -83,7 +100,10 @@ private fun CurrentDot() {
         initialValue = 1.0f,
         targetValue = 1.3f,
         animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 800, easing = LinearEasing),
+            animation = tween(
+                durationMillis = 800,
+                easing = EaseInOut,
+            ),
             repeatMode = RepeatMode.Reverse,
         ),
         label = "pulseScale",

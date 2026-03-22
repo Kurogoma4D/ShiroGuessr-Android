@@ -16,6 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.krgm4d.shiroguessr.ui.theme.AccentPrimary
+import dev.krgm4d.shiroguessr.ui.theme.ShiroAnimation
 import dev.krgm4d.shiroguessr.ui.theme.ShiroGuessrAndroidTheme
 
 /**
@@ -47,7 +48,7 @@ fun DashedLinePath(
 ) {
     val animatedProgress by animateFloatAsState(
         targetValue = progress,
-        animationSpec = tween(durationMillis = 420),
+        animationSpec = ShiroAnimation.standardTween(ShiroAnimation.TWEEN_DURATION_MEDIUM_MS),
         label = "dashedLineProgress",
     )
 

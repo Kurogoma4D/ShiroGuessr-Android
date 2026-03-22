@@ -66,7 +66,7 @@ fun GameHeader(
             ) {
                 Icon(
                     imageVector = Icons.Default.SportsEsports,
-                    contentDescription = null,
+                    contentDescription = stringResource(R.string.cd_game_modes_icon),
                     modifier = Modifier.padding(end = 4.dp),
                 )
                 Text(

@@ -59,11 +59,19 @@
 
     <!-- Accessibility / contentDescription -->
     <string name="cd_target_icon">Target</string>
-    <string name="cd_game_modes_icon">Game Modes</string>
-    <string name="cd_gradient_map">Gradient map</string>
+    <string name="cd_game_modes_icon">Switch game mode</string>
+    <string name="cd_gradient_map">Gradient map for placing pin</string>
     <string name="cd_color_cell">Color cell</string>
+    <string name="cd_color_cell_rgb">Color cell: red %1$d, green %2$d, blue %3$d</string>
+    <string name="cd_color_sample_rgb">%1$s color: red %2$d, green %3$d, blue %4$d</string>
     <string name="cd_star_earned">Star earned</string>
     <string name="cd_star_unearned">Star not earned</string>
+    <string name="cd_star_rating">%1$d out of %2$d stars</string>
+    <string name="cd_score_ring">Score: %1$d out of %2$d</string>
+    <string name="cd_round_indicator">Round %1$d of %2$d</string>
+    <string name="cd_timer_remaining">%1$d seconds remaining</string>
+    <string name="cd_trophy">Trophy</string>
+    <string name="cd_mode_card">%1$s. %2$s</string>
 
 
     <!-- Share -->

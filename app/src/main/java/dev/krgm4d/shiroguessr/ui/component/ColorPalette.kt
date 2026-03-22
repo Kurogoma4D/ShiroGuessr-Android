@@ -39,6 +39,7 @@ import dev.krgm4d.shiroguessr.model.RGBColor
 import dev.krgm4d.shiroguessr.ui.theme.AccentPrimary
 import dev.krgm4d.shiroguessr.ui.theme.CanvasElevated
 import dev.krgm4d.shiroguessr.ui.theme.SampleBorder
+import dev.krgm4d.shiroguessr.ui.theme.ShiroAnimation
 
 /**
  * A 5x5 grid of selectable color cells following the Shiro Gallery design.
@@ -136,33 +137,27 @@ private fun ColorCell(
 
     val borderColor by animateColorAsState(
         targetValue = if (isSelected) AccentPrimary else SampleBorder,
-        animationSpec = tween(durationMillis = 200),
+        animationSpec = ShiroAnimation.standardTween(),
         label = "borderColor",
     )
 
     val borderWidth by animateDpAsState(
         targetValue = if (isSelected) 2.5.dp else 1.5.dp,
-        animationSpec = tween(durationMillis = 200),
+        animationSpec = ShiroAnimation.standardTween(),
         label = "borderWidth",
     )
 
     // Selection scale: 1.05x when selected
     val selectionScale by animateFloatAsState(
         targetValue = if (isSelected) 1.05f else 1.0f,
-        animationSpec = spring(
-            dampingRatio = 0.7f,
-            stiffness = 300f,
-        ),
+        animationSpec = ShiroAnimation.standardSpring(),
         label = "selectionScale",
     )
 
     // Press sink scale: 0.95x on tap, springs back to 1.0x
     val pressScale by animateFloatAsState(
         targetValue = if (isPressed) 0.95f else 1.0f,
-        animationSpec = spring(
-            dampingRatio = 0.7f,
-            stiffness = 300f,
-        ),
+        animationSpec = ShiroAnimation.standardSpring(),
         label = "pressScale",
     )
 
@@ -172,11 +167,16 @@ private fun ColorCell(
     // Glow shadow elevation when selected
     val glowElevation by animateDpAsState(
         targetValue = if (isSelected) 8.dp else 2.dp,
-        animationSpec = tween(durationMillis = 200),
+        animationSpec = ShiroAnimation.standardTween(),
         label = "glowElevation",
     )
 
-    val colorCellDescription = stringResource(R.string.cd_color_cell)
+    val colorCellDescription = stringResource(
+        R.string.cd_color_cell_rgb,
+        color.r,
+        color.g,
+        color.b,
+    )
 
     Box(
         modifier = modifier

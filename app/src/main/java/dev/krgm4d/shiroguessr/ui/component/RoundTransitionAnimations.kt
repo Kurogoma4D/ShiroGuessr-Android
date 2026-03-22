@@ -1,12 +1,10 @@
 package dev.krgm4d.shiroguessr.ui.component
 
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.EaseInOut
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import dev.krgm4d.shiroguessr.ui.theme.ShiroAnimation
 
 /**
  * Holds the animated values used during round transitions.
@@ -29,9 +27,11 @@ data class RoundTransitionAnimationValues(
  * Creates and runs the shared round-transition animations.
  *
  * Both ClassicGameScreen and MapGameScreen use the same animation pattern:
- * 1. Target color fades in (300ms EaseInOut tween)
- * 2. Main content slides in from below (spring: stiffness 300, dampingRatio 0.7)
+ * 1. Target color fades in (standard tween: 300ms EaseInOut)
+ * 2. Main content slides in from below (standard spring: stiffness 300, dampingRatio 0.7)
  * 3. Controls slide in with a staggered delay (80ms) using the same spring + fade
+ *
+ * Phase 4-3: All animation specs now use [ShiroAnimation] constants for consistency.
  *
  * @param roundNumber The current round number, used as a key to restart animations.
  * @return [RoundTransitionAnimationValues] containing all animated values.
@@ -44,24 +44,18 @@ fun rememberRoundTransitionAnimations(roundNumber: Int): RoundTransitionAnimatio
     val controlsAlpha = remember(roundNumber) { Animatable(0f) }
 
     LaunchedEffect(roundNumber) {
-        // Target color fade-in (300ms EaseInOut tween)
+        // Target color fade-in (standard tween: 300ms EaseInOut)
         targetAlpha.animateTo(
             targetValue = 1f,
-            animationSpec = tween(
-                durationMillis = 300,
-                easing = EaseInOut,
-            ),
+            animationSpec = ShiroAnimation.standardTween(),
         )
     }
 
     LaunchedEffect(roundNumber) {
-        // Content slide-in from below (spring: stiffness 300, dampingRatio 0.7)
+        // Content slide-in from below (standard spring: stiffness 300, dampingRatio 0.7)
         contentOffsetYDp.animateTo(
             targetValue = 0f,
-            animationSpec = spring(
-                dampingRatio = 0.7f,
-                stiffness = 300f,
-            ),
+            animationSpec = ShiroAnimation.standardSpring(),
         )
     }
 
@@ -70,10 +64,7 @@ fun rememberRoundTransitionAnimations(roundNumber: Int): RoundTransitionAnimatio
         kotlinx.coroutines.delay(80L)
         controlsAlpha.animateTo(
             targetValue = 1f,
-            animationSpec = tween(
-                durationMillis = 300,
-                easing = EaseInOut,
-            ),
+            animationSpec = ShiroAnimation.standardTween(),
         )
     }
 
@@ -81,10 +72,7 @@ fun rememberRoundTransitionAnimations(roundNumber: Int): RoundTransitionAnimatio
         kotlinx.coroutines.delay(80L)
         controlsOffsetYDp.animateTo(
             targetValue = 0f,
-            animationSpec = spring(
-                dampingRatio = 0.7f,
-                stiffness = 300f,
-            ),
+            animationSpec = ShiroAnimation.standardSpring(),
         )
     }
 

@@ -45,6 +45,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -56,6 +58,7 @@ import dev.krgm4d.shiroguessr.ui.theme.AccentPrimary
 import dev.krgm4d.shiroguessr.ui.theme.AccentSecondary
 import dev.krgm4d.shiroguessr.ui.theme.CanvasDeep
 import dev.krgm4d.shiroguessr.ui.theme.CanvasElevated
+import dev.krgm4d.shiroguessr.ui.theme.ShiroAnimation
 import dev.krgm4d.shiroguessr.ui.theme.ShiroGuessrAndroidTheme
 import dev.krgm4d.shiroguessr.ui.theme.TextPrimary
 import dev.krgm4d.shiroguessr.ui.theme.TextSecondary
@@ -197,14 +200,16 @@ private fun ModeSelectionCard(
     val isPressed by interactionSource.collectIsPressedAsState()
     val scale by animateFloatAsState(
         targetValue = if (isPressed) 0.97f else 1f,
-        animationSpec = spring(dampingRatio = 0.7f, stiffness = 300f),
+        animationSpec = ShiroAnimation.standardSpring(),
         label = "cardScale",
     )
 
+    val cardDescription = stringResource(R.string.cd_mode_card, title, description)
     Card(
         modifier = modifier
             .fillMaxWidth()
             .scale(scale)
+            .semantics { contentDescription = cardDescription }
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,

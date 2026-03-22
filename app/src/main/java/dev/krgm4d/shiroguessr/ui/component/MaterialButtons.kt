@@ -28,6 +28,7 @@ import dev.krgm4d.shiroguessr.ui.theme.AccentContainer
 import dev.krgm4d.shiroguessr.ui.theme.AccentPrimary
 import dev.krgm4d.shiroguessr.ui.theme.AccentSecondary
 import dev.krgm4d.shiroguessr.ui.theme.CanvasDeep
+import dev.krgm4d.shiroguessr.ui.theme.ShiroAnimation
 import dev.krgm4d.shiroguessr.ui.theme.TextPrimary
 import dev.krgm4d.shiroguessr.ui.theme.TextSecondary
 
@@ -60,10 +61,7 @@ private fun Modifier.pressScale(interactionSource: MutableInteractionSource): Mo
     val isPressed by interactionSource.collectIsPressedAsState()
     val scale by animateFloatAsState(
         targetValue = if (isPressed) PRESSED_SCALE else DEFAULT_SCALE,
-        animationSpec = spring(
-            dampingRatio = 0.7f,
-            stiffness = 300f
-        ),
+        animationSpec = ShiroAnimation.standardSpring(),
         label = "pressScale"
     )
     return this.scale(scale)
