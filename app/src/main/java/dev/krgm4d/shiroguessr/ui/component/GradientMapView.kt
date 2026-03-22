@@ -1,17 +1,22 @@
 package dev.krgm4d.shiroguessr.ui.component
 
 import android.graphics.Bitmap
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -20,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
@@ -31,19 +37,25 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
 import dev.krgm4d.shiroguessr.R
 import dev.krgm4d.shiroguessr.model.GradientMap
 import dev.krgm4d.shiroguessr.model.MapCoordinate
 import dev.krgm4d.shiroguessr.model.Pin
 import dev.krgm4d.shiroguessr.model.RGBColor
+import dev.krgm4d.shiroguessr.ui.theme.AccentPrimary
+import dev.krgm4d.shiroguessr.ui.theme.SampleBorder
 import dev.krgm4d.shiroguessr.ui.theme.ShiroGuessrAndroidTheme
 
 /**
- * Displays an interactive gradient map with pins.
+ * Displays an interactive gradient map with pins, wrapped in a gallery-style frame.
  *
  * Corresponds to the iOS version's `GradientMapView.swift`.
  * Renders a bilinear gradient using Canvas, supports tap-to-place pins,
  * and shows animated target pins and dashed lines after submission.
+ *
+ * The map is framed with a dark border and subtle shadow, evoking a gallery
+ * exhibit aesthetic consistent with the Shiro Gallery design system.
  *
  * @param gradientMap The gradient map to display
  * @param userPin Optional pin placed by the user
@@ -67,80 +79,98 @@ fun GradientMapView(
     onPinPlacement: ((MapCoordinate) -> Unit)? = null,
     modifier: Modifier = Modifier,
 ) {
-    val outlineColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
-    val onSurfaceColor = MaterialTheme.colorScheme.onSurface
-
     // Cache the gradient as an ImageBitmap so we do not redraw 2500 rects every frame.
     // Regenerate only when the gradient map instance changes.
     val gradientBitmap = remember(gradientMap) { renderGradientBitmap(gradientMap) }
 
+    // Gallery-style frame: dark border (3dp) with subtle shadow
     Box(
         modifier = modifier
-            .size(mapSize)
-            .clip(RoundedCornerShape(16.dp))
-            .border(
-                width = 2.dp,
-                color = outlineColor,
-                shape = RoundedCornerShape(16.dp),
-            ),
+            .shadow(
+                elevation = 8.dp,
+                shape = RoundedCornerShape(4.dp),
+                ambientColor = Color.Black.copy(alpha = 0.4f),
+                spotColor = Color.Black.copy(alpha = 0.4f),
+            )
+            .clip(RoundedCornerShape(4.dp)),
     ) {
-        // Gradient map as a pre-rendered bitmap
-        Image(
-            bitmap = gradientBitmap,
-            contentDescription = stringResource(R.string.cd_gradient_map),
-            contentScale = ContentScale.FillBounds,
+        // Dark border frame
+        Box(
             modifier = Modifier
-                .size(mapSize)
-                .pointerInput(isInteractionEnabled) {
-                    if (isInteractionEnabled) {
-                        detectTapGestures { offset ->
-                            val normalizedX = (offset.x / size.width.toFloat()).coerceIn(0f, 1f)
-                            val normalizedY = (offset.y / size.height.toFloat()).coerceIn(0f, 1f)
-                            onPinPlacement?.invoke(
-                                MapCoordinate(
-                                    x = normalizedX.toDouble(),
-                                    y = normalizedY.toDouble(),
-                                ),
-                            )
-                        }
-                    }
-                },
-        )
+                .size(mapSize + 6.dp) // 3dp border on each side
+                .clip(RoundedCornerShape(4.dp)),
+        ) {
+            // Dark border background
+            Canvas(modifier = Modifier.size(mapSize + 6.dp)) {
+                drawRect(color = SampleBorder)
+            }
 
-        // Dashed line between user pin and target pin
-        if (userPin != null && targetPin != null && lineDrawProgress > 0f) {
-            DashedLinePath(
-                fromX = userPin.coordinate.x.toFloat(),
-                fromY = userPin.coordinate.y.toFloat(),
-                toX = targetPin.coordinate.x.toFloat(),
-                toY = targetPin.coordinate.y.toFloat(),
-                progress = lineDrawProgress,
-                mapSize = mapSize,
-                lineColor = onSurfaceColor.copy(alpha = 0.6f),
-            )
-        }
+            // Inner map content with 3dp padding (the border)
+            Box(
+                modifier = Modifier
+                    .padding(3.dp)
+                    .size(mapSize)
+                    .clip(RoundedCornerShape(2.dp)),
+            ) {
+                // Gradient map as a pre-rendered bitmap
+                Image(
+                    bitmap = gradientBitmap,
+                    contentDescription = stringResource(R.string.cd_gradient_map),
+                    contentScale = ContentScale.FillBounds,
+                    modifier = Modifier
+                        .size(mapSize)
+                        .pointerInput(isInteractionEnabled) {
+                            if (isInteractionEnabled) {
+                                detectTapGestures { offset ->
+                                    val normalizedX =
+                                        (offset.x / size.width.toFloat()).coerceIn(0f, 1f)
+                                    val normalizedY =
+                                        (offset.y / size.height.toFloat()).coerceIn(0f, 1f)
+                                    onPinPlacement?.invoke(
+                                        MapCoordinate(
+                                            x = normalizedX.toDouble(),
+                                            y = normalizedY.toDouble(),
+                                        ),
+                                    )
+                                }
+                            }
+                        },
+                )
 
-        // User pin (blue circle)
-        if (userPin != null) {
-            PinMarker(
-                coordinate = userPin.coordinate,
-                color = Color.Blue,
-                mapSize = mapSize,
-            )
-        }
+                // Dashed line between user pin and target pin (gold color)
+                if (userPin != null && targetPin != null && lineDrawProgress > 0f) {
+                    DashedLinePath(
+                        fromX = userPin.coordinate.x.toFloat(),
+                        fromY = userPin.coordinate.y.toFloat(),
+                        toX = targetPin.coordinate.x.toFloat(),
+                        toY = targetPin.coordinate.y.toFloat(),
+                        progress = lineDrawProgress,
+                        mapSize = mapSize,
+                        lineColor = AccentPrimary.copy(alpha = 0.8f),
+                    )
+                }
 
-        // Target pin (red circle, optionally animated)
-        if (targetPin != null && showTargetPinAnimated) {
-            AnimatedTargetPin(
-                coordinate = targetPin.coordinate,
-                mapSize = mapSize,
-            )
-        } else if (targetPin != null) {
-            PinMarker(
-                coordinate = targetPin.coordinate,
-                color = Color.Red,
-                mapSize = mapSize,
-            )
+                // User pin (gold accent circle with bounce-drop animation)
+                if (userPin != null) {
+                    UserPinMarker(
+                        coordinate = userPin.coordinate,
+                        mapSize = mapSize,
+                    )
+                }
+
+                // Target pin (white circle with red outline, optionally animated)
+                if (targetPin != null && showTargetPinAnimated) {
+                    AnimatedTargetPin(
+                        coordinate = targetPin.coordinate,
+                        mapSize = mapSize,
+                    )
+                } else if (targetPin != null) {
+                    TargetPinMarker(
+                        coordinate = targetPin.coordinate,
+                        mapSize = mapSize,
+                    )
+                }
+            }
         }
     }
 }
@@ -190,15 +220,93 @@ private fun renderGradientBitmap(gradientMap: GradientMap): ImageBitmap {
 }
 
 /**
- * A pin marker drawn on the map at the given coordinate.
+ * User pin marker with gold accent color and bounce-drop animation.
  *
- * Renders as a filled circle with a white border and a white center dot,
- * matching the iOS version's pin appearance.
+ * Renders as a gold-filled circle with a white border, drop shadow, and
+ * a spring-based bounce animation when first placed.
  */
 @Composable
-private fun PinMarker(
+private fun UserPinMarker(
     coordinate: MapCoordinate,
-    color: Color,
+    mapSize: Dp,
+) {
+    // Bounce-drop animation: pin drops from above with spring physics
+    var targetOffsetY by remember { mutableStateOf(-30f) }
+    val animatedOffsetY by animateFloatAsState(
+        targetValue = targetOffsetY,
+        animationSpec = spring(
+            dampingRatio = 0.5f,
+            stiffness = Spring.StiffnessMedium,
+        ),
+        label = "userPinBounce",
+    )
+
+    var targetScale by remember { mutableStateOf(0.5f) }
+    val animatedScale by animateFloatAsState(
+        targetValue = targetScale,
+        animationSpec = spring(
+            dampingRatio = 0.6f,
+            stiffness = Spring.StiffnessMedium,
+        ),
+        label = "userPinScale",
+    )
+
+    LaunchedEffect(coordinate) {
+        targetOffsetY = -30f
+        targetScale = 0.5f
+        delay(16)
+        // Trigger animation to final position
+        targetOffsetY = 0f
+        targetScale = 1f
+    }
+
+    Canvas(modifier = Modifier.size(mapSize)) {
+        val pinX = coordinate.x.toFloat() * size.width
+        val pinY = coordinate.y.toFloat() * size.height + animatedOffsetY.dp.toPx()
+        val pinRadius = 8.dp.toPx() * animatedScale
+        val center = Offset(pinX, pinY)
+
+        if (animatedScale > 0f) {
+            // Drop shadow
+            drawCircle(
+                color = Color.Black.copy(alpha = 0.4f),
+                radius = pinRadius + 2.dp.toPx() * animatedScale,
+                center = center.copy(y = center.y + 2.dp.toPx()),
+            )
+
+            // Filled circle (gold accent)
+            drawCircle(
+                color = AccentPrimary,
+                radius = pinRadius,
+                center = center,
+            )
+
+            // White border
+            drawCircle(
+                color = Color.White,
+                radius = pinRadius,
+                center = center,
+                style = Stroke(width = 2.dp.toPx() * animatedScale),
+            )
+
+            // White center dot
+            drawCircle(
+                color = Color.White,
+                radius = 2.dp.toPx() * animatedScale,
+                center = center,
+            )
+        }
+    }
+}
+
+/**
+ * Static target pin marker with white fill and red outline.
+ *
+ * Used when the target pin is displayed without animation (e.g., on revisit).
+ */
+@Composable
+private fun TargetPinMarker(
+    coordinate: MapCoordinate,
     mapSize: Dp,
 ) {
     Canvas(modifier = Modifier.size(mapSize)) {
@@ -214,24 +322,24 @@ private fun PinMarker(
             center = center.copy(y = center.y + 1.dp.toPx()),
         )
 
-        // Filled circle
-        drawCircle(
-            color = color,
-            radius = pinRadius,
-            center = center,
-        )
-
-        // White border
+        // Filled circle (white)
         drawCircle(
             color = Color.White,
             radius = pinRadius,
             center = center,
-            style = Stroke(width = 2.dp.toPx()),
         )
 
-        // White center dot
+        // Red outline
         drawCircle(
-            color = Color.White,
+            color = Color.Red,
+            radius = pinRadius,
+            center = center,
+            style = Stroke(width = 2.5.dp.toPx()),
+        )
+
+        // Red center dot
+        drawCircle(
+            color = Color.Red,
             radius = 2.dp.toPx(),
             center = center,
         )
@@ -239,7 +347,10 @@ private fun PinMarker(
 }
 
 /**
- * Target pin that animates in with a spring pop-in effect.
+ * Target pin that animates in with a spring pop-in effect and continuous pulse.
+ *
+ * Renders as a white circle with a red outline. On appearance, the pin
+ * scales up with spring physics, then continuously pulses to draw attention.
  *
  * Corresponds to the iOS version's `AnimatedTargetPin`.
  */
@@ -248,6 +359,7 @@ private fun AnimatedTargetPin(
     coordinate: MapCoordinate,
     mapSize: Dp,
 ) {
+    // Pop-in scale animation
     var targetScale by remember { mutableStateOf(0f) }
     val scale by animateFloatAsState(
         targetValue = targetScale,
@@ -256,6 +368,28 @@ private fun AnimatedTargetPin(
             stiffness = Spring.StiffnessMediumLow,
         ),
         label = "targetPinScale",
+    )
+
+    // Pulse animation (continuous after pop-in)
+    val infiniteTransition = rememberInfiniteTransition(label = "targetPinPulse")
+    val pulseScale by infiniteTransition.animateFloat(
+        initialValue = 1f,
+        targetValue = 1.15f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 800, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse,
+        ),
+        label = "targetPinPulseScale",
+    )
+
+    val pulseAlpha by infiniteTransition.animateFloat(
+        initialValue = 0.4f,
+        targetValue = 0f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 800, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse,
+        ),
+        label = "targetPinPulseAlpha",
     )
 
     LaunchedEffect(Unit) {
@@ -269,6 +403,15 @@ private fun AnimatedTargetPin(
         val center = Offset(pinX, pinY)
 
         if (scale > 0f) {
+            // Pulse ring (outer glow effect)
+            if (scale > 0.8f) {
+                drawCircle(
+                    color = Color.Red.copy(alpha = pulseAlpha),
+                    radius = pinRadius * pulseScale * 1.8f,
+                    center = center,
+                )
+            }
+
             // Shadow
             drawCircle(
                 color = Color.Black.copy(alpha = 0.3f),
@@ -276,24 +419,24 @@ private fun AnimatedTargetPin(
                 center = center.copy(y = center.y + 1.dp.toPx()),
             )
 
-            // Filled circle (red)
+            // Filled circle (white)
+            drawCircle(
+                color = Color.White,
+                radius = pinRadius,
+                center = center,
+            )
+
+            // Red outline
             drawCircle(
                 color = Color.Red,
                 radius = pinRadius,
                 center = center,
+                style = Stroke(width = 2.5.dp.toPx() * scale),
             )
 
-            // White border
+            // Red center dot
             drawCircle(
-                color = Color.White,
-                radius = pinRadius,
-                center = center,
-                style = Stroke(width = 2.dp.toPx() * scale),
-            )
-
-            // White center dot
-            drawCircle(
-                color = Color.White,
+                color = Color.Red,
                 radius = 2.dp.toPx() * scale,
                 center = center,
             )
@@ -301,7 +444,7 @@ private fun AnimatedTargetPin(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, backgroundColor = 0xFF0D0D12)
 @Composable
 private fun GradientMapViewEmptyPreview() {
     ShiroGuessrAndroidTheme {
@@ -316,11 +459,12 @@ private fun GradientMapViewEmptyPreview() {
                     RGBColor(r = 255, g = 255, b = 245),
                 ),
             ),
+            modifier = Modifier.padding(16.dp),
         )
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, backgroundColor = 0xFF0D0D12)
 @Composable
 private fun GradientMapViewWithPinsPreview() {
     ShiroGuessrAndroidTheme {
@@ -345,6 +489,7 @@ private fun GradientMapViewWithPinsPreview() {
             ),
             showTargetPinAnimated = false,
             lineDrawProgress = 1f,
+            modifier = Modifier.padding(16.dp),
         )
     }
 }

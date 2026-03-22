@@ -26,7 +26,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -103,10 +102,12 @@ fun MapGameScreen(
                     val configuration = LocalConfiguration.current
                     val screenWidth = configuration.screenWidthDp.dp
                     val isTablet = configuration.screenWidthDp >= 600
+                    // Map is the star of this mode -- use larger ratio to screen width.
+                    // Account for gallery frame border (3dp each side = 6dp total).
                     val mapSize = if (isTablet) {
-                        min(screenWidth - 32.dp, 500.dp)
+                        min(screenWidth - 48.dp, 500.dp)
                     } else {
-                        min(screenWidth - 32.dp, 300.dp)
+                        min(screenWidth - 48.dp, 360.dp)
                     }
 
                     Column(
