@@ -9,6 +9,8 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -74,7 +76,11 @@ fun TutorialOverlay(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(CanvasDeep.copy(alpha = 0.95f)),
+            .background(CanvasDeep.copy(alpha = 0.95f))
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+            ) { },
         contentAlignment = Alignment.Center,
     ) {
         Column(
@@ -128,7 +134,7 @@ fun TutorialOverlay(
                     if (isLastPage) {
                         onDismiss()
                     } else {
-                        currentPage++
+                        currentPage = (currentPage + 1).coerceAtMost(PAGE_COUNT - 1)
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
