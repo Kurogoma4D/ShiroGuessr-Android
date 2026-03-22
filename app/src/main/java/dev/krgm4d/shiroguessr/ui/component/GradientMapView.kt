@@ -10,6 +10,7 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import kotlinx.coroutines.delay
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -92,7 +93,7 @@ fun GradientMapView(
                 spotColor = Color.Black.copy(alpha = 0.4f),
             )
             .clip(RoundedCornerShape(4.dp))
-            .padding(0.dp),
+,
     ) {
         // Dark border frame
         Box(
@@ -254,6 +255,7 @@ private fun UserPinMarker(
     LaunchedEffect(coordinate) {
         targetOffsetY = -30f
         targetScale = 0.5f
+        delay(16)
         // Trigger animation to final position
         targetOffsetY = 0f
         targetScale = 1f
