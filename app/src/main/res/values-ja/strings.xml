@@ -72,6 +72,7 @@
     <string name="cd_round_indicator">%2$d ラウンド中 %1$d ラウンド目</string>
     <string name="cd_timer_remaining">残り %1$d 秒</string>
     <string name="cd_trophy">トロフィー</string>
+    <string name="cd_mode_card">%1$s。%2$s</string>
 
 
     <!-- Share -->

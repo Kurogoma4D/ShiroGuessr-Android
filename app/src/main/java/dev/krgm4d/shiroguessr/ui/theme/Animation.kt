@@ -43,6 +43,12 @@ object ShiroAnimation {
     /** Long tween duration in milliseconds (upper end of 300-500ms range). */
     const val TWEEN_DURATION_LONG_MS = 500
 
+    /**
+     * Pulse duration for the timer warning state.
+     * Exceeds the standard 300-500ms range for visual emphasis on the slow pulse.
+     */
+    const val TWEEN_DURATION_PULSE_MS = 700
+
     // -- Convenience factory methods ------------------------------------------
 
     /**

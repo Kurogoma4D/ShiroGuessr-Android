@@ -152,7 +152,7 @@ fun MapGameScreen(
                         // Timer display with progress bar and pulse effects
                         TimerDisplay(
                             timeRemaining = uiState.timeRemaining,
-                            totalTime = 60,
+                            totalTime = uiState.timeLimit,
                             modifier = Modifier.padding(horizontal = 16.dp),
                         )
 

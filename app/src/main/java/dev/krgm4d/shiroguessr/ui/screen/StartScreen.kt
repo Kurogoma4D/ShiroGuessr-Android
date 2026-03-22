@@ -204,7 +204,7 @@ private fun ModeSelectionCard(
         label = "cardScale",
     )
 
-    val cardDescription = "$title. $description"
+    val cardDescription = stringResource(R.string.cd_mode_card, title, description)
     Card(
         modifier = modifier
             .fillMaxWidth()

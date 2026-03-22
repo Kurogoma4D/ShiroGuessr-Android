@@ -93,7 +93,7 @@ fun TimerDisplay(
     val pulseDuration = if (isCritical) {
         ShiroAnimation.TWEEN_DURATION_LONG_MS
     } else {
-        700
+        ShiroAnimation.TWEEN_DURATION_PULSE_MS
     }
     val infiniteTransition = rememberInfiniteTransition(label = "timerPulse")
     val animatedScale by infiniteTransition.animateFloat(
