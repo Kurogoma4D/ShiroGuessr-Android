@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -28,7 +30,7 @@ import dev.krgm4d.shiroguessr.ui.theme.ShiroGuessrAndroidTheme
  * Displays the round dot indicator and cumulative score.
  *
  * Corresponds to the iOS version's `ScoreBoard.swift`.
- * Shows a 5-dot round indicator on the left and "Score" on the right,
+ * Shows a dot-based round indicator on the left and "Score" on the right,
  * separated by a vertical divider.
  *
  * The round indicator uses dot/step indicators per the Shiro Gallery guideline:
@@ -66,7 +68,9 @@ fun ScoreBoard(
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier
+                .height(IntrinsicSize.Min)
+                .padding(16.dp),
         ) {
             // Round dot indicator
             RoundIndicator(
@@ -77,7 +81,7 @@ fun ScoreBoard(
             // Vertical divider
             VerticalDivider(
                 modifier = Modifier
-                    .height(44.dp)
+                    .fillMaxHeight()
                     .padding(horizontal = 24.dp),
                 color = MaterialTheme.colorScheme.outlineVariant,
             )
