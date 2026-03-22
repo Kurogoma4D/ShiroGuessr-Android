@@ -8,6 +8,7 @@
 
     <!-- Game -->
     <string name="game_find_this_color">Find this color:</string>
+    <string name="game_target_label">TARGET</string>
     <string name="game_map_title">Map Mode</string>
     <string name="game_map_tagline">Find the right white on the gradient map!</string>
     <string name="game_start">Start Game</string>
