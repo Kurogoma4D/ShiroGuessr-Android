@@ -1,7 +1,7 @@
 package dev.krgm4d.shiroguessr.ui.component
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -79,6 +79,8 @@ fun RoundResultDialog(
     onNext: () -> Unit,
     onDismiss: () -> Unit,
 ) {
+    BackHandler(onBack = onDismiss)
+
     // Entrance animation state
     val scaleAnim = remember { Animatable(0.8f) }
     val alphaAnim = remember { Animatable(0f) }
