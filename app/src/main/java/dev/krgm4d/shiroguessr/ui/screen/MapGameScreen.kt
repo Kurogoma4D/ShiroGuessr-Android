@@ -152,6 +152,7 @@ fun MapGameScreen(
                         // Timer display
                         TimerDisplay(
                             timeRemaining = uiState.timeRemaining,
+                            totalTime = uiState.timeLimit,
                             modifier = Modifier.padding(horizontal = 16.dp),
                         )
 
