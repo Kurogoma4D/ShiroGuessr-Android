@@ -1,48 +1,67 @@
 package dev.krgm4d.shiroguessr.ui.theme
 
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
 /**
- * Material Design 3 Color System for ShiroGuessr.
+ * Shiro Gallery Dark Color System for ShiroGuessr.
  *
- * Based on the iOS version's ColorSystem.swift, adapted for Jetpack Compose.
- * This game deals with white colors, so only a light theme is supported.
+ * Dark-base color palette designed to maximize visibility of white color samples.
+ * A dark background makes subtle differences between whites much easier to perceive.
  */
 
-// Primary Colors
-val MdPrimary = Color(0xFF617CFB) // Material Blue (rgb 0.38, 0.49, 0.98)
-val MdOnPrimary = Color.White
-val MdPrimaryContainer = Color(0xFFDEE6FF) // rgb 0.87, 0.90, 1.0
-val MdOnPrimaryContainer = Color(0xFF00216B) // rgb 0.0, 0.13, 0.42
+// Surface & Background
+val CanvasDeep = Color(0xFF0D0D12)       // メイン背景
+val CanvasElevated = Color(0xFF1A1A22)   // カード/パネル背景
+val CanvasSubtle = Color(0xFF252530)     // セカンダリ面
 
-// Secondary Colors
-val MdSecondary = Color(0xFF5C6E9E) // rgb 0.36, 0.43, 0.62
-val MdOnSecondary = Color.White
-val MdSecondaryContainer = Color(0xFFD9E3FF) // rgb 0.85, 0.89, 1.0
-val MdOnSecondaryContainer = Color(0xFF0F214A) // rgb 0.06, 0.13, 0.29
+// Accent: Warm Gold
+val AccentPrimary = Color(0xFFC9A96E)    // ゴールドアクセント — CTA、選択、スコア
+val AccentSecondary = Color(0xFF8B7A5E)  // ミュートゴールド
+val AccentContainer = Color(0xFF2A2520)  // アクセント背景
 
-// Tertiary Colors
-val MdTertiary = Color(0xFFA14F94) // rgb 0.63, 0.31, 0.58
-val MdOnTertiary = Color.White
-val MdTertiaryContainer = Color(0xFFF5D9F0) // rgb 0.96, 0.85, 0.94
-val MdOnTertiaryContainer = Color(0xFF470F40) // rgb 0.28, 0.06, 0.25
+// Text
+val TextPrimary = Color(0xFFE8E6E3)      // メインテキスト
+val TextSecondary = Color(0xFF9995A0)    // セカンダリテキスト
+val TextMuted = Color(0xFF5C5866)        // 控えめテキスト
 
-// Error Colors
-val MdError = Color(0xFFBA1C1C) // rgb 0.73, 0.11, 0.11
-val MdOnError = Color.White
-val MdErrorContainer = Color(0xFFFFD9D9) // rgb 1.0, 0.85, 0.85
-val MdOnErrorContainer = Color(0xFF680000) // rgb 0.41, 0.0, 0.0
+// Feedback
+val ScoreHigh = Color(0xFF7EC88B)        // 高スコア
+val ScoreMid = Color(0xFFC9A96E)         // 中スコア
+val ScoreLow = Color(0xFFC87E7E)         // 低スコア
+val TimerWarning = Color(0xFFD4956B)     // タイマー警告
+val TimerCritical = Color(0xFFC87E7E)    // タイマー危険
 
-// Background Colors
-val MdBackground = Color(0xFFFCFCFF) // rgb 0.99, 0.99, 1.0
-val MdOnBackground = Color(0xFF1C1C21) // rgb 0.11, 0.11, 0.13
+// Color Sample Display
+val SampleBorder = Color(0xFF3A3A45)     // 色サンプル枠線
 
-// Surface Colors
-val MdSurface = Color(0xFFFCFCFF) // rgb 0.99, 0.99, 1.0
-val MdOnSurface = Color(0xFF1C1C21) // rgb 0.11, 0.11, 0.13
-val MdSurfaceVariant = Color(0xFFE0E6F5) // rgb 0.88, 0.90, 0.96
-val MdOnSurfaceVariant = Color(0xFF454A54) // rgb 0.27, 0.29, 0.33
+// Error Container (dark variant)
+val ErrorContainerDark = Color(0xFF3D1F1F)  // エラー背景
 
-// Outline Colors
-val MdOutline = Color(0xFF757885) // rgb 0.46, 0.47, 0.52
-val MdOutlineVariant = Color(0xFFC7C9D9) // rgb 0.78, 0.79, 0.85
+/**
+ * Custom color palette for ShiroGuessr, provided via CompositionLocal.
+ *
+ * These colors extend beyond Material 3's built-in color roles to support
+ * game-specific UI needs such as score feedback and sample display.
+ */
+@Immutable
+data class ShiroGuessrColors(
+    val canvasDeep: Color = CanvasDeep,
+    val canvasElevated: Color = CanvasElevated,
+    val canvasSubtle: Color = CanvasSubtle,
+    val accentPrimary: Color = AccentPrimary,
+    val accentSecondary: Color = AccentSecondary,
+    val accentContainer: Color = AccentContainer,
+    val textPrimary: Color = TextPrimary,
+    val textSecondary: Color = TextSecondary,
+    val textMuted: Color = TextMuted,
+    val scoreHigh: Color = ScoreHigh,
+    val scoreMid: Color = ScoreMid,
+    val scoreLow: Color = ScoreLow,
+    val timerWarning: Color = TimerWarning,
+    val timerCritical: Color = TimerCritical,
+    val sampleBorder: Color = SampleBorder,
+)
+
+val LocalShiroGuessrColors = staticCompositionLocalOf { ShiroGuessrColors() }
