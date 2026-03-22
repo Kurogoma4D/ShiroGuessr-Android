@@ -1,5 +1,6 @@
 package dev.krgm4d.shiroguessr.ui.screen
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,7 +32,7 @@ import dev.krgm4d.shiroguessr.service.InterstitialAdManager
 import dev.krgm4d.shiroguessr.service.ShareService
 import dev.krgm4d.shiroguessr.service.TutorialManager
 import dev.krgm4d.shiroguessr.ui.component.GameHeader
-import dev.krgm4d.shiroguessr.ui.component.TutorialBottomSheet
+import dev.krgm4d.shiroguessr.ui.component.TutorialOverlay
 import dev.krgm4d.shiroguessr.ui.theme.ShiroGuessrAndroidTheme
 import dev.krgm4d.shiroguessr.viewmodel.GameMode
 import dev.krgm4d.shiroguessr.viewmodel.ResultViewModel
@@ -71,21 +72,13 @@ fun RootScreen(
     val isOnStartScreen = currentRoute
         ?.contains(Screen.Start::class.qualifiedName.orEmpty()) == true
 
-    if (showTutorial) {
-        TutorialBottomSheet(
-            onDismiss = {
-                manager.markTutorialAsShown()
-                showTutorial = false
-            },
-        )
-    }
-
+    Box(modifier = modifier.fillMaxSize()) {
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         contentWindowInsets = WindowInsets(0),
     ) { scaffoldPadding ->
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .padding(scaffoldPadding),
         ) {
@@ -210,6 +203,17 @@ fun RootScreen(
             }
         }
     }
+
+    // Fullscreen tutorial overlay rendered on top of all content
+    if (showTutorial) {
+        TutorialOverlay(
+            onDismiss = {
+                manager.markTutorialAsShown()
+                showTutorial = false
+            },
+        )
+    }
+    } // end Box
 }
 
 @Preview(showBackground = true)
