@@ -1,9 +1,5 @@
 package dev.krgm4d.shiroguessr.ui.screen
 
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.EaseInOut
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -48,6 +44,7 @@ import dev.krgm4d.shiroguessr.ui.component.MdFilledButton
 import dev.krgm4d.shiroguessr.ui.component.RoundResultDialog
 import dev.krgm4d.shiroguessr.ui.component.ScoreBoard
 import dev.krgm4d.shiroguessr.ui.component.TargetColorFrame
+import dev.krgm4d.shiroguessr.ui.component.rememberRoundTransitionAnimations
 import dev.krgm4d.shiroguessr.ui.theme.ShiroGuessrAndroidTheme
 import dev.krgm4d.shiroguessr.viewmodel.ClassicGamePhase
 import dev.krgm4d.shiroguessr.viewmodel.ClassicGameViewModel
@@ -110,55 +107,7 @@ fun ClassicGameScreen(
                 if (currentRound != null && gameState != null) {
                     // Round transition animations keyed on round number.
                     // Target color fades in; palette slides in from below.
-                    val targetAlpha = remember(currentRound.roundNumber) { Animatable(0f) }
-                    val paletteOffsetY = remember(currentRound.roundNumber) { Animatable(200f) }
-                    val controlsOffsetY = remember(currentRound.roundNumber) { Animatable(120f) }
-                    val controlsAlpha = remember(currentRound.roundNumber) { Animatable(0f) }
-
-                    LaunchedEffect(currentRound.roundNumber) {
-                        // Target color fade-in (300ms EaseInOut tween)
-                        targetAlpha.animateTo(
-                            targetValue = 1f,
-                            animationSpec = tween(
-                                durationMillis = 300,
-                                easing = EaseInOut,
-                            ),
-                        )
-                    }
-
-                    LaunchedEffect(currentRound.roundNumber) {
-                        // Palette slide-in from below (spring: stiffness 300, dampingRatio 0.7)
-                        paletteOffsetY.animateTo(
-                            targetValue = 0f,
-                            animationSpec = spring(
-                                dampingRatio = 0.7f,
-                                stiffness = 300f,
-                            ),
-                        )
-                    }
-
-                    LaunchedEffect(currentRound.roundNumber) {
-                        // Controls slide-in slightly delayed for stagger effect
-                        kotlinx.coroutines.delay(80L)
-                        controlsAlpha.animateTo(
-                            targetValue = 1f,
-                            animationSpec = tween(
-                                durationMillis = 300,
-                                easing = EaseInOut,
-                            ),
-                        )
-                    }
-
-                    LaunchedEffect(currentRound.roundNumber) {
-                        kotlinx.coroutines.delay(80L)
-                        controlsOffsetY.animateTo(
-                            targetValue = 0f,
-                            animationSpec = spring(
-                                dampingRatio = 0.7f,
-                                stiffness = 300f,
-                            ),
-                        )
-                    }
+                    val animations = rememberRoundTransitionAnimations(currentRound.roundNumber)
 
                     Column(
                         modifier = Modifier
@@ -182,7 +131,7 @@ fun ClassicGameScreen(
                             showCSSValue = false,
                             modifier = Modifier
                                 .padding(horizontal = 16.dp)
-                                .alpha(targetAlpha.value),
+                                .alpha(animations.targetAlpha.value),
                         )
 
                         Spacer(modifier = Modifier.height(20.dp))
@@ -196,7 +145,7 @@ fun ClassicGameScreen(
                             modifier = Modifier
                                 .padding(horizontal = 16.dp)
                                 .offset {
-                                    IntOffset(0, paletteOffsetY.value.dp.roundToPx())
+                                    IntOffset(0, animations.contentOffsetYDp.value.dp.roundToPx())
                                 },
                         )
 
@@ -217,9 +166,9 @@ fun ClassicGameScreen(
                             },
                             onNext = { viewModel.nextRound() },
                             modifier = Modifier
-                                .alpha(controlsAlpha.value)
+                                .alpha(animations.controlsAlpha.value)
                                 .offset {
-                                    IntOffset(0, controlsOffsetY.value.dp.roundToPx())
+                                    IntOffset(0, animations.controlsOffsetYDp.value.dp.roundToPx())
                                 },
                         )
 
