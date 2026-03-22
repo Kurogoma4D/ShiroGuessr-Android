@@ -59,6 +59,7 @@ import dev.krgm4d.shiroguessr.model.GameState
 import dev.krgm4d.shiroguessr.model.RGBColor
 import dev.krgm4d.shiroguessr.ui.component.MdFilledButton
 import dev.krgm4d.shiroguessr.ui.component.MdOutlinedButton
+import dev.krgm4d.shiroguessr.ui.component.calculateStarRating
 import dev.krgm4d.shiroguessr.ui.theme.AccentPrimary
 import dev.krgm4d.shiroguessr.ui.theme.ScoreHigh
 import dev.krgm4d.shiroguessr.ui.theme.ScoreLow
@@ -67,7 +68,6 @@ import dev.krgm4d.shiroguessr.ui.theme.ShiroGuessrAndroidTheme
 import dev.krgm4d.shiroguessr.viewmodel.ResultViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
-import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.random.Random
 
@@ -455,9 +455,11 @@ private fun RoundResultRow(round: GameRound) {
             )
         }
 
-        // Small star rating next to swatches
-        Spacer(modifier = Modifier.width(8.dp))
-        MiniStarRating(filledStars = starCount)
+        // Small star rating next to swatches (hidden for unanswered rounds)
+        if (round.distance != null) {
+            Spacer(modifier = Modifier.width(8.dp))
+            MiniStarRating(filledStars = starCount)
+        }
 
         Spacer(modifier = Modifier.weight(1f))
 
@@ -544,26 +546,6 @@ private fun MiniStarRating(
     }
 }
 
-/**
- * Calculates a 1-5 star rating based on Manhattan distance.
- *
- * Uses the same thresholds as [RoundResultDialog]:
- * - 0-2: 5 stars
- * - 3-6: 4 stars
- * - 7-12: 3 stars
- * - 13-20: 2 stars
- * - 21+: 1 star
- */
-private fun calculateStarRating(distance: Int): Int {
-    return when {
-        distance <= 2 -> 5
-        distance <= 6 -> 4
-        distance <= 12 -> 3
-        distance <= 20 -> 2
-        else -> 1
-    }
-}
-
 // ---------------------------------------------------------------------------
 // Gold Particle Effect
 // ---------------------------------------------------------------------------
@@ -579,7 +561,7 @@ private fun calculateStarRating(distance: Int): Int {
  * @property drift Horizontal drift speed
  * @property phase Phase offset for sinusoidal horizontal drift
  */
-private data class GoldParticle(
+private class GoldParticle(
     var x: Float,
     var y: Float,
     val radius: Float,
@@ -606,6 +588,11 @@ private fun GoldParticleEffect(
     }
     var tick by remember { mutableStateOf(0L) }
 
+    // Particles are intentionally mutated in-place for performance: allocating new
+    // particle lists every frame would create GC pressure. The `tick++` state change
+    // is sufficient to trigger Canvas recomposition, which then reads the updated
+    // particle positions. This is safe because the particle list is only read during
+    // the Canvas draw phase, which always runs after this coroutine yields via delay.
     LaunchedEffect(Unit) {
         while (isActive) {
             delay(16L) // ~60 fps
