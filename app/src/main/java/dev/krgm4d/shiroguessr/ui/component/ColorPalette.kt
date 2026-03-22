@@ -9,6 +9,8 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
@@ -43,7 +46,8 @@ import dev.krgm4d.shiroguessr.ui.theme.SampleBorder
  * Corresponds to the iOS version's `ColorPalette.swift`.
  * Displays palette colors in a grid layout where each cell can be tapped
  * to select a color. The selected cell shows a gold ring animation with
- * a subtle scale-up effect (1.05x).
+ * a subtle scale-up effect (1.05x). Each cell also has a gentle press
+ * sink effect (0.95x scale) on tap.
  *
  * Shiro Gallery Card/Panel style:
  * - Background: CanvasElevated (#1A1A22)
@@ -108,6 +112,7 @@ fun ColorPalette(
  * Shows the color as a rounded square with 16dp corner radius.
  * When selected, displays a gold ring border (2.5dp AccentPrimary) with
  * a glow effect and a scale-up animation (1.05x).
+ * On tap, applies a gentle sink effect (0.95x scale) that springs back.
  *
  * Shiro Gallery Color Sample Cell style:
  * - Corner radius: 16dp
@@ -115,6 +120,7 @@ fun ColorPalette(
  * - Border selected: 2.5dp AccentPrimary (#C9A96E) with glow
  * - Shadow: 0 2dp 6dp rgba(0,0,0,0.3)
  * - Selected scale: 1.05
+ * - Press scale: 0.95 (spring animation)
  */
 @Composable
 private fun ColorCell(
@@ -125,6 +131,8 @@ private fun ColorCell(
     modifier: Modifier = Modifier,
 ) {
     val cellShape = RoundedCornerShape(16.dp)
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
 
     val borderColor by animateColorAsState(
         targetValue = if (isSelected) AccentPrimary else SampleBorder,
@@ -138,14 +146,28 @@ private fun ColorCell(
         label = "borderWidth",
     )
 
-    val cellScale by animateFloatAsState(
+    // Selection scale: 1.05x when selected
+    val selectionScale by animateFloatAsState(
         targetValue = if (isSelected) 1.05f else 1.0f,
         animationSpec = spring(
             dampingRatio = 0.7f,
             stiffness = 300f,
         ),
-        label = "cellScale",
+        label = "selectionScale",
     )
+
+    // Press sink scale: 0.95x on tap, springs back to 1.0x
+    val pressScale by animateFloatAsState(
+        targetValue = if (isPressed) 0.95f else 1.0f,
+        animationSpec = spring(
+            dampingRatio = 0.7f,
+            stiffness = 300f,
+        ),
+        label = "pressScale",
+    )
+
+    // Combine selection and press scales
+    val combinedScale = selectionScale * pressScale
 
     // Glow shadow elevation when selected
     val glowElevation by animateDpAsState(
@@ -162,7 +184,7 @@ private fun ColorCell(
                 contentDescription = colorCellDescription
                 selected = isSelected
             }
-            .scale(cellScale)
+            .scale(combinedScale)
             .aspectRatio(1f)
             .shadow(
                 elevation = glowElevation,
@@ -182,6 +204,11 @@ private fun ColorCell(
             .background(color.toComposeColor())
             .border(borderWidth, borderColor, cellShape)
             .alpha(if (isEnabled) 1f else 0.5f)
-            .clickable(enabled = isEnabled, onClick = onClick),
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                enabled = isEnabled,
+                onClick = onClick,
+            ),
     )
 }
