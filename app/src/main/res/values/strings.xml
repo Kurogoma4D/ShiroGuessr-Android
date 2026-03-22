@@ -6,6 +6,12 @@
     <string name="app_title">ShiroGuessr</string>
     <string name="app_tagline">Can you tell the whites apart?</string>
 
+    <!-- Start Screen - Mode Selection Cards -->
+    <string name="start_classic_title">Classic</string>
+    <string name="start_classic_description">Find it among 25 colors</string>
+    <string name="start_map_title">Map</string>
+    <string name="start_map_description">Locate it in 60 seconds</string>
+
     <!-- Game -->
     <string name="game_find_this_color">Find this color:</string>
     <string name="game_target_label">TARGET</string>

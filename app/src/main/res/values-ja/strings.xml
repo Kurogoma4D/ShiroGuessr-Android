@@ -7,6 +7,12 @@
     <string name="app_title">白Guessr</string>
     <string name="app_tagline">あなたは白を見分けられますか？</string>
 
+    <!-- Start Screen - Mode Selection Cards -->
+    <string name="start_classic_title">クラシック</string>
+    <string name="start_classic_description">25色の中から見つけよう</string>
+    <string name="start_map_title">マップ</string>
+    <string name="start_map_description">60秒で位置を特定しよう</string>
+
     <!-- Game -->
     <string name="game_find_this_color">この色を探してください</string>
     <string name="game_target_label">TARGET</string>

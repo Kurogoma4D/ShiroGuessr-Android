@@ -40,9 +40,12 @@ import kotlinx.coroutines.launch
 /**
  * Root screen of the application.
  *
- * Displays the [GameHeader] at the top and uses a [NavHost] to switch
- * the content area between Classic, Map, and Result screens. The default
- * start destination is [Screen.Map], matching the iOS version's behaviour.
+ * Uses a [NavHost] to switch between the Start screen (mode selection),
+ * Classic, Map, and Result screens. The default start destination is
+ * [Screen.Start], which shows the redesigned mode selection cards.
+ *
+ * The [GameHeader] is shown on all screens except the Start screen,
+ * where mode selection is handled by the cards instead.
  *
  * Corresponds to the iOS `RootView`.
  */
@@ -64,6 +67,10 @@ fun RootScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
+    // Determine if we are on the Start screen to hide the GameHeader
+    val isOnStartScreen = currentRoute
+        ?.contains(Screen.Start::class.qualifiedName.orEmpty()) == true
+
     if (showTutorial) {
         TutorialBottomSheet(
             onDismiss = {
@@ -82,27 +89,41 @@ fun RootScreen(
                 .fillMaxSize()
                 .padding(scaffoldPadding),
         ) {
-            GameHeader(
-                onModeButtonTap = {
-                    val isOnClassic = currentRoute
-                        ?.contains(Screen.Classic::class.qualifiedName.orEmpty()) == true
-                    val target: Screen = if (isOnClassic) Screen.Map() else Screen.Classic()
-
-                    navController.navigate(target) {
-                        // Clear the entire back stack so that toggling modes
-                        // does not accumulate stale entries.
-                        popUpTo(navController.graph.id) { inclusive = true }
-                        launchSingleTop = true
-                    }
-                },
-                modifier = Modifier.fillMaxWidth(),
-            )
+            // Hide the header on the Start screen; show it during gameplay
+            if (!isOnStartScreen) {
+                GameHeader(
+                    onModeButtonTap = {
+                        // Navigate back to the Start screen for mode selection
+                        navController.navigate(Screen.Start) {
+                            popUpTo(navController.graph.id) { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
 
             NavHost(
                 navController = navController,
-                startDestination = Screen.Map(),
+                startDestination = Screen.Start,
                 modifier = Modifier.weight(1f),
             ) {
+                composable<Screen.Start> {
+                    StartScreen(
+                        onClassicSelected = {
+                            navController.navigate(Screen.Classic(autoStart = true)) {
+                                popUpTo(navController.graph.id) { inclusive = true }
+                                launchSingleTop = true
+                            }
+                        },
+                        onMapSelected = {
+                            navController.navigate(Screen.Map(autoStart = true)) {
+                                popUpTo(navController.graph.id) { inclusive = true }
+                                launchSingleTop = true
+                            }
+                        },
+                    )
+                }
                 composable<Screen.Classic> { backStackEntry ->
                     val route = backStackEntry.toRoute<Screen.Classic>()
                     ClassicGameScreen(
