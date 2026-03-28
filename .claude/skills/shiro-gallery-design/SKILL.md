@@ -186,7 +186,7 @@ Score numbers are a **hero element**. Render in DM Serif Display at 72sp/pt in g
 - **Frame**: Wrap the map in a **gallery-style frame**. Dark border (3dp) on the outside, subtle shadow beyond that
 - **Size**: Keep square aspect ratio but increase the ratio to screen width (the map is the star of this mode)
 - **Pins**:
-  - User pin: Gold accent circle + drop shadow. Bounce-drop animation on placement (drops from above)
+  - User pin: Gold accent circle + drop shadow. Ease-out drop animation on placement (150ms, replays on each placement)
   - Target pin: White circle + red outline. Pop-in + pulse animation on result reveal
 - **Dashed line**: Change to gold color. Keep the draw animation
 
@@ -198,16 +198,16 @@ Score numbers are a **hero element**. Render in DM Serif Display at 72sp/pt in g
 
 ### 5.5 Round Result Dialog
 
-**Current**: BottomSheet with color comparison + distance + score + continue button
+**Current**: ModalBottomSheet with color comparison + distance + score + star rating + continue button
 
 **Improvements**:
 
-- **Display method**: BottomSheet -> **full-screen overlay**. Dark semi-transparent backdrop for focus
+- **Display method**: **ModalBottomSheet** with semi-transparent scrim (`Color.Black alpha 0.4`). Uses standard sheet open/close animations
 - **Color comparison**: Target and selected colors shown as **large circles side by side**. "vs" text between them instead of an arrow
 - **Distance display**: Large gold-colored number. Manhattan distance as the primary metric
 - **Score display**: Visualize score out of 1000 with a progress ring (circular progress bar)
 - **Star rating**: Add 1-5 star rating based on distance. Stars in gold; earned stars filled, unearned outlined
-- **Entrance animation**: Scale-up from center + fade-in (spring animation)
+- **Continue action**: Sheet closes with slide-down animation before proceeding to next round
 
 ### 5.6 Final Result Screen
 
@@ -248,8 +248,10 @@ Score numbers are a **hero element**. Render in DM Serif Display at 72sp/pt in g
 
 ### Common Principles
 
-- **Spring Animation**: For major in-game transitions. `stiffness: 300, dampingRatio: 0.7` (Android) / `response: 0.4, dampingFraction: 0.7` (iOS)
+- **Spring Animation**: For specific in-game interactions (target pin pop-in, score bounce). `stiffness: 300, dampingRatio: 0.7` (Android) / `response: 0.4, dampingFraction: 0.7` (iOS)
 - **Tween/Ease**: For continuous transitions like color changes and fades. `300-500ms`, `EaseInOut`
+- **Ease-Out**: For quick responsive feedback like pin placement. `150ms`, `EaseOut`
+- **Minimal round transitions**: Round start displays content immediately without slide-in or fade-in animations. This keeps gameplay snappy and avoids unnecessary waiting between rounds
 - **No excessive animation**: Must not interfere with gameplay. Palette selection and pin placement in particular must respond instantly
 
 ### Key Animation Inventory
@@ -257,14 +259,14 @@ Score numbers are a **hero element**. Render in DM Serif Display at 72sp/pt in g
 | Scene | Animation | Priority |
 | ----- | --------- | -------- |
 | Game start | Card-to-game-screen transition | High |
-| Round start | Target color fade-in + palette/map slide-in from below | High |
+| Round start | Content appears immediately (no transition animation) | — |
 | Color selection (Classic) | Selection ring animation + subtle scale | Medium |
-| Pin placement (Map) | Bounce-drop | Medium |
-| Guess submission | Button ripple + brief freeze (100ms) -> result overlay | High |
+| Pin placement (Map) | Ease-out drop (150ms, replays on each placement) | Medium |
+| Guess submission | Button ripple + brief freeze (100ms) -> result sheet | High |
 | Target pin reveal (Map) | Pop-in + pulse | High |
 | Dashed line draw (Map) | Line-extending animation (keep existing) | Medium |
 | Score count-up | Digit count-up + color transition | High |
-| Round result display | Scale-up from center + fade-in | High |
+| Round result display | ModalBottomSheet standard slide-up / slide-down | High |
 | Final result rows | Staggered fade-in (100ms intervals) | Medium |
 | Particles (high score) | Floating gold light particles | Low |
 
@@ -344,9 +346,9 @@ spacing: 12dp
 ### Phase 3: Screen Transitions & Effects
 
 1. Redesign start screen (mode selection cards)
-2. Convert round result to full-screen overlay
+2. Round result as ModalBottomSheet with slide-down close on Continue
 3. Improve final result screen (star ratings, particles)
-4. Round transition animations
+4. Splash screen: black background
 
 ### Phase 4: Polish
 
