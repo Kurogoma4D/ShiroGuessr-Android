@@ -4,7 +4,7 @@
     <style name="Theme.ShiroGuessrAndroid" parent="android:Theme.Material.Light.NoActionBar" />
 
     <style name="Theme.ShiroGuessrAndroid.Splash" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">@android:color/white</item>
+        <item name="windowSplashScreenBackground">@android:color/black</item>
         <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_foreground</item>
         <item name="windowSplashScreenAnimationDuration">800</item>
         <item name="postSplashScreenTheme">@style/Theme.ShiroGuessrAndroid</item>

@@ -1,21 +1,15 @@
 package dev.krgm4d.shiroguessr.ui.component
 
-import androidx.activity.compose.BackHandler
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -24,18 +18,18 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowCircleRight
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.StarOutline
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -56,86 +50,52 @@ import dev.krgm4d.shiroguessr.ui.theme.AccentPrimary
 import dev.krgm4d.shiroguessr.ui.theme.DmSerifDisplayFontFamily
 import dev.krgm4d.shiroguessr.ui.theme.JetBrainsMonoFontFamily
 import dev.krgm4d.shiroguessr.ui.theme.SampleBorder
-import dev.krgm4d.shiroguessr.ui.theme.ShiroAnimation
 import dev.krgm4d.shiroguessr.ui.theme.ShiroGuessrAndroidTheme
 import dev.krgm4d.shiroguessr.ui.theme.TextMuted
 import kotlinx.coroutines.launch
 
 /**
- * Full-screen overlay dialog displaying the result of a single round.
+ * Bottom sheet displaying the result of a single round.
  *
  * Corresponds to the iOS version's `RoundResultDialog.swift`.
  * Shows a comparison between the target color and the selected color using
  * large circles, Manhattan distance in gold, a circular score progress ring,
  * and a 1-5 star rating.
  *
- * Entrance animation: scale-up from center + fade-in using spring animation
- * with stiffness 300 and dampingRatio 0.7 per Shiro Gallery guideline.
- *
  * @param round The completed game round with results
  * @param onNext Callback to proceed to the next round
- * @param onDismiss Callback when the backdrop is tapped
+ * @param onDismiss Callback when the sheet is dismissed
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RoundResultDialog(
     round: GameRound,
     onNext: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    BackHandler(onBack = onDismiss)
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val scope = rememberCoroutineScope()
 
-    // Entrance animation state
-    val scaleAnim = remember { Animatable(0.8f) }
-    val alphaAnim = remember { Animatable(0f) }
-
-    LaunchedEffect(Unit) {
-        launch {
-            scaleAnim.animateTo(
-                targetValue = 1f,
-                animationSpec = ShiroAnimation.standardSpring(),
-            )
-        }
-        launch {
-            alphaAnim.animateTo(
-                targetValue = 1f,
-                animationSpec = ShiroAnimation.standardTween(),
-            )
-        }
-    }
-
-    // Dark semi-transparent backdrop
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Black.copy(alpha = 0.7f))
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null,
-                onClick = onDismiss,
-            ),
-        contentAlignment = Alignment.Center,
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = sheetState,
+        containerColor = MaterialTheme.colorScheme.surface,
+        scrimColor = Color.Black.copy(alpha = 0.4f),
     ) {
-        // Content with scale + fade animation
-        Box(
-            modifier = Modifier
-                .scale(scaleAnim.value)
-                .alpha(alphaAnim.value)
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null,
-                    onClick = { /* Prevent click-through to backdrop */ },
-                ),
-        ) {
-            RoundResultContent(
-                round = round,
-                onNext = onNext,
-            )
-        }
+        RoundResultContent(
+            round = round,
+            onNext = {
+                scope.launch {
+                    sheetState.hide()
+                    onNext()
+                }
+            },
+        )
     }
 }
 
 /**
- * Content of the round result overlay.
+ * Content of the round result bottom sheet.
  *
  * Extracted as a separate composable for preview support.
  */
@@ -152,7 +112,8 @@ private fun RoundResultContent(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 32.dp),
+            .padding(horizontal = 32.dp)
+            .navigationBarsPadding(),
     ) {
         // Header
         Text(
@@ -242,6 +203,8 @@ private fun RoundResultContent(
                 contentDescription = null,
             )
         }
+
+        Spacer(modifier = Modifier.height(24.dp))
     }
 }
 
