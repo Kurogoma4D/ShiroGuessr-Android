@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -28,11 +27,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
@@ -44,7 +41,6 @@ import dev.krgm4d.shiroguessr.ui.component.MdFilledButton
 import dev.krgm4d.shiroguessr.ui.component.RoundResultDialog
 import dev.krgm4d.shiroguessr.ui.component.ScoreBoard
 import dev.krgm4d.shiroguessr.ui.component.TargetColorFrame
-import dev.krgm4d.shiroguessr.ui.component.rememberRoundTransitionAnimations
 import dev.krgm4d.shiroguessr.ui.theme.ShiroGuessrAndroidTheme
 import dev.krgm4d.shiroguessr.viewmodel.ClassicGamePhase
 import dev.krgm4d.shiroguessr.viewmodel.ClassicGameViewModel
@@ -105,10 +101,6 @@ fun ClassicGameScreen(
                 val gameState = uiState.gameState
 
                 if (currentRound != null && gameState != null) {
-                    // Round transition animations keyed on round number.
-                    // Target color fades in; palette slides in from below.
-                    val animations = rememberRoundTransitionAnimations(currentRound.roundNumber)
-
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
@@ -125,33 +117,27 @@ fun ClassicGameScreen(
 
                         Spacer(modifier = Modifier.height(20.dp))
 
-                        // Target color display (gallery-frame style) with fade-in
+                        // Target color display (gallery-frame style)
                         TargetColorFrame(
                             targetColor = currentRound.targetColor,
                             showCSSValue = false,
-                            modifier = Modifier
-                                .padding(horizontal = 16.dp)
-                                .alpha(animations.targetAlpha.value),
+                            modifier = Modifier.padding(horizontal = 16.dp),
                         )
 
                         Spacer(modifier = Modifier.height(20.dp))
 
-                        // Color palette with slide-in from below
+                        // Color palette
                         ColorPalette(
                             colors = currentRound.paletteColors,
                             selectedColor = uiState.selectedColor,
                             onColorSelected = { color -> viewModel.selectColor(color) },
                             isEnabled = !uiState.isRoundSubmitted,
-                            modifier = Modifier
-                                .padding(horizontal = 16.dp)
-                                .offset {
-                                    IntOffset(0, animations.contentOffsetYDp.value.dp.roundToPx())
-                                },
+                            modifier = Modifier.padding(horizontal = 16.dp),
                         )
 
                         Spacer(modifier = Modifier.height(20.dp))
 
-                        // Game controls with staggered slide-in and submit freeze
+                        // Game controls with submit freeze
                         GameControls(
                             canSubmit = uiState.hasSelectedColor && !uiState.isRoundSubmitted && !isSubmitFrozen,
                             canProceed = uiState.isRoundSubmitted,
@@ -165,11 +151,6 @@ fun ClassicGameScreen(
                                 }
                             },
                             onNext = { viewModel.nextRound() },
-                            modifier = Modifier
-                                .alpha(animations.controlsAlpha.value)
-                                .offset {
-                                    IntOffset(0, animations.controlsOffsetYDp.value.dp.roundToPx())
-                                },
                         )
 
                         Spacer(modifier = Modifier.height(20.dp))

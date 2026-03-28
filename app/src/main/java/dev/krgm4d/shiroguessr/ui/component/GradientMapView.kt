@@ -1,7 +1,9 @@
 package dev.krgm4d.shiroguessr.ui.component
 
 import android.graphics.Bitmap
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.EaseInOut
+import androidx.compose.animation.core.EaseOut
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
@@ -36,7 +38,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import dev.krgm4d.shiroguessr.R
 import dev.krgm4d.shiroguessr.model.GradientMap
 import dev.krgm4d.shiroguessr.model.MapCoordinate
@@ -220,48 +223,33 @@ private fun renderGradientBitmap(gradientMap: GradientMap): ImageBitmap {
 }
 
 /**
- * User pin marker with gold accent color and bounce-drop animation.
+ * User pin marker with gold accent color and ease-out drop animation.
  *
  * Renders as a gold-filled circle with a white border, drop shadow, and
- * a spring-based bounce animation when first placed.
- *
- * Phase 4-3: Spring parameters unified to stiffness 300 with bounce
- * damping ratio (0.4) for intentional overshoot on pin drop.
+ * an ease-out animation that replays every time the pin is placed.
  */
 @Composable
 private fun UserPinMarker(
     coordinate: MapCoordinate,
     mapSize: Dp,
 ) {
-    // Bounce-drop animation: pin drops from above with spring physics
-    var targetOffsetY by remember { mutableStateOf(-30f) }
-    val animatedOffsetY by animateFloatAsState(
-        targetValue = targetOffsetY,
-        animationSpec = spring(
-            dampingRatio = ShiroAnimation.SPRING_BOUNCE_DAMPING_RATIO,
-            stiffness = ShiroAnimation.SPRING_STIFFNESS,
-        ),
-        label = "userPinBounce",
-    )
-
-    var targetScale by remember { mutableStateOf(0.5f) }
-    val animatedScale by animateFloatAsState(
-        targetValue = targetScale,
-        animationSpec = spring(
-            dampingRatio = ShiroAnimation.SPRING_DAMPING_RATIO,
-            stiffness = ShiroAnimation.SPRING_STIFFNESS,
-        ),
-        label = "userPinScale",
-    )
+    // Ease-out drop animation: pin drops from above with scale-in
+    val offsetY = remember { Animatable(-30f) }
+    val scale = remember { Animatable(0.5f) }
 
     LaunchedEffect(coordinate) {
-        targetOffsetY = -30f
-        targetScale = 0.5f
-        delay(16)
-        // Trigger animation to final position
-        targetOffsetY = 0f
-        targetScale = 1f
+        // Reset to initial values for each pin placement
+        offsetY.snapTo(-15f)
+        scale.snapTo(0.8f)
+        // Animate to final position with ease-out (run both in parallel)
+        coroutineScope {
+            launch { offsetY.animateTo(0f, tween(150, easing = EaseOut)) }
+            launch { scale.animateTo(1f, tween(150, easing = EaseOut)) }
+        }
     }
+
+    val animatedOffsetY = offsetY.value
+    val animatedScale = scale.value
 
     Canvas(modifier = Modifier.size(mapSize)) {
         val pinX = coordinate.x.toFloat() * size.width
