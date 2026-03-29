@@ -16,7 +16,6 @@ jobs:
     permissions:
       contents: write
       actions: write
-      variables: write
 
     steps:
       - name: Checkout repository
@@ -99,7 +98,7 @@ jobs:
 
       - name: Increment BUILD_NUMBER
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
           NEXT_BUILD_NUMBER=$(( ${{ vars.BUILD_NUMBER }} + 1 ))
           gh api --method PATCH \
