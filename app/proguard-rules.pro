@@ -20,3 +20,20 @@
 -keepclassmembers class <1>$Companion {
     kotlinx.serialization.KSerializer serializer(...);
 }
+
+# Room - keep generated database and DAO implementations
+-keep class * extends androidx.room.RoomDatabase
+-keep class * extends androidx.room.RoomDatabase { *; }
+-keep class **_Impl { *; }
+-keep @androidx.room.Dao class *
+-keepclassmembers @androidx.room.Dao class * { *; }
+-keep @androidx.room.Entity class * { *; }
+
+# WorkManager
+-keep class * extends androidx.work.WorkerParameters
+-keep class * extends androidx.work.ListenableWorker {
+    public <init>(android.content.Context, androidx.work.WorkerParameters);
+}
+
+# AndroidX Startup
+-keep class * extends androidx.startup.Initializer { *; }
